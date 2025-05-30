@@ -28,9 +28,9 @@ PLAID_SECRET = os.environ.get('PLAID_SECRET')
 PLAID_ENV = os.environ.get('PLAID_ENV', 'sandbox')
 
 # Add RapidAPI configuration
-REWARDS_CC_API_KEY = os.environ.get('RAPIDAPI_KEY')
-REWARDS_CC_API_HOST = os.environ.get('RAPIDAPI_HOST')
-REWARDS_CC_BASE_URL = os.environ.get('RAPIDAPI_BASE_URL')
+REWARDS_CC_API_KEY = os.environ.get('REWARDS_CC_API_KEY')
+REWARDS_CC_API_HOST = os.environ.get('REWARDS_CC_API_HOST')
+REWARDS_CC_BASE_URL = os.environ.get('REWARDS_CC_BASE_URL')
 
 # Validate required environment variables
 required_env_vars = {
