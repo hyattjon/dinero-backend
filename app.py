@@ -64,11 +64,11 @@ app = Flask(__name__)
 # Add this CORS configuration before any routes
 CORS(app, resources={
     r"/*": {
-        "origins": [os.environ.get('CORS_ORIGIN', 'https://your-frontend-app.herokuapp.com')],
+        "origins": ["https://dinero-frontend-500b23e1674a.herokuapp.com"],
         "methods": ["GET", "POST", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"]
     }
-})
+}, supports_credentials=True)
 
 # Disable SSL requirement for local development
 app.config['TALISMAN_ENABLED'] = False
