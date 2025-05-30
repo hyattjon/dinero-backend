@@ -64,7 +64,11 @@ app = Flask(__name__)
 # Add this CORS configuration before any routes
 CORS(app, resources={
     r"/*": {
-        "origins": ["https://dinero-frontend-500b23e1674a.herokuapp.com"],
+        "origins": [
+            "http://localhost:3000",  # Local frontend (if used)
+            "http://localhost:8080",  # Local frontend for testing
+            "https://dinero-frontend-500b23e1674a.herokuapp.com"  # Production frontend
+        ],
         "methods": ["GET", "POST", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"]
     }
@@ -338,8 +342,17 @@ def recommend_cards_endpoint():
         app.logger.error(f'Error processing recommendation: {str(e)}')
         return jsonify({"error": "Internal server error"}), 500
 
-@app.route("/create_link_token", methods=["POST"])
+@app.route('/create_link_token', methods=['OPTIONS', 'POST'])
 def create_link_token():
+    if request.method == 'OPTIONS':
+        # Handle preflight request
+        response = jsonify({"status": "OK"})
+        response.headers.add("Access-Control-Allow-Origin", "http://localhost:8080")
+        response.headers.add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        return response
+
+    # Handle actual POST request
     try:
         request_config = {
             'user': {'client_user_id': 'user-' + str(datetime.datetime.now().timestamp())},
@@ -348,7 +361,6 @@ def create_link_token():
             'country_codes': ["US"],
             'language': "en"
         }
-        
         response = client.link_token_create(request_config)
         return jsonify({"link_token": response['link_token']})
     except plaid.ApiException as e:
