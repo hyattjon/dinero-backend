@@ -18,6 +18,7 @@ import json
 import httpx
 import asyncio
 from typing import List, Dict, Any
+import random
 
 load_dotenv()
 
@@ -791,4 +792,26 @@ if __name__ == "__main__":
     
     app.logger.info("Starting Hypercorn server...")
     asyncio.run(serve(app, config))
+
+import os
+from flask import current_app
+
+# Add debug logging
+print("=== Environment Variables Debug ===")
+print("Current environment variables:")
+for key in ['REWARDS_CC_API_KEY', 'REWARDS_CC_API_HOST', 'REWARDS_CC_BASE_URL']:
+    print(f"{key}: {os.getenv(key)}")
+print("===============================")
+
+# Check required variables
+required_vars = [
+    'REWARDS_CC_API_KEY',
+    'REWARDS_CC_API_HOST',
+    'REWARDS_CC_BASE_URL'
+]
+
+missing_vars = [var for var in required_vars if not os.getenv(var)]
+if missing_vars:
+    print("ERROR: Missing variables:", missing_vars)
+    raise RuntimeError(f"Missing required environment variables: {', '.join(missing_vars)}")
 
