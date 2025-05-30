@@ -350,7 +350,8 @@ def create_link_token():
         response.headers.add("Access-Control-Allow-Origin", "http://localhost:8080")
         response.headers.add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
-        return response
+        response.headers.add("Access-Control-Allow-Credentials", "true")
+        return response, 200
 
     # Handle actual POST request
     try:
