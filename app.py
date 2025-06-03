@@ -68,10 +68,10 @@ CORS(app, resources={
             "http://localhost:3000",  # Local frontend (if used)
             "http://localhost:8080",  # Local frontend for testing
             "https://dinero-frontend-500b23e1674a.herokuapp.com",  # Production frontend
-            "http://cardmatcher.net",
-            "https://cardmatcher.net",
-            "http://www.cardmatcher.net",
-            "https://www.cardmatcher.net"
+            "http://cardmatcher.net", # Production URL
+            "https://cardmatcher.net", # Production URL
+            "http://www.cardmatcher.net", # Production URL
+            "https://www.cardmatcher.net" # Produiction URL
         ],
         "methods": ["GET", "POST", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"]
@@ -351,13 +351,30 @@ def create_link_token():
     if request.method == 'OPTIONS':
         # Handle preflight request
         response = jsonify({"status": "OK"})
-        response.headers.add("Access-Control-Allow-Origin", "http://localhost:8080")
+        # Use the request's origin, but verify it's in your allowed origins list
+        origin = request.headers.get('Origin', '')
+        allowed_origins = [
+            "http://localhost:3000",
+            "http://localhost:8080", 
+            "https://dinero-frontend-500b23e1674a.herokuapp.com",
+            "http://cardmatcher.net",
+            "https://cardmatcher.net",
+            "http://www.cardmatcher.net", 
+            "https://www.cardmatcher.net"
+        ]
+        
+        # Only set the origin if it's in the allowed list or use * as fallback
+        if origin in allowed_origins:
+            response.headers.add("Access-Control-Allow-Origin", origin)
+        else:
+            response.headers.add("Access-Control-Allow-Origin", "*")
+            
         response.headers.add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
         response.headers.add("Access-Control-Allow-Credentials", "true")
         return response, 200
 
-    # Handle actual POST request
+    # Handle actual POST request (Flask-CORS will handle this automatically)
     try:
         request_config = {
             'user': {'client_user_id': 'user-' + str(datetime.datetime.now().timestamp())},
