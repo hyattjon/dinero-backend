@@ -67,7 +67,11 @@ CORS(app, resources={
         "origins": [
             "http://localhost:3000",  # Local frontend (if used)
             "http://localhost:8080",  # Local frontend for testing
-            "https://dinero-frontend-500b23e1674a.herokuapp.com"  # Production frontend
+            "https://dinero-frontend-500b23e1674a.herokuapp.com",  # Production frontend
+            "http://cardmatcher.net",
+            "https://cardmatcher.net",
+            "http://www.cardmatcher.net",
+            "https://www.cardmatcher.net"
         ],
         "methods": ["GET", "POST", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"]
