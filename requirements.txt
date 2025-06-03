@@ -3,18 +3,38 @@ pandas>=2.1.0
 flask>=3.0.0
 flask-cors>=6.0.0
 flask-talisman>=0.8.1
+
+# Flask-Limiter with Redis support
 flask-limiter[redis]>=3.5.0
+
+# Redis client for Python
 redis>=5.0.0
+
+# For managing environment variables
 python-dotenv>=1.0.0
+
+# WSGI server for Heroku
 gunicorn>=21.2.0
+
+# Plaid API integration
 plaid-python>=16.0.0
+
+# HTTP utilities
 requests>=2.31.0
 urllib3<2.0.0
+
+# Secure HTTPS support
 pyOpenSSL>=23.0.0
+
+# Async support
 httpx>=0.25.0
 asgiref>=3.7.2
 aiohttp>=3.9.1
+
+# ASGI server (optional if you're running async; remove if not needed)
 hypercorn>=0.16.0
+
+# Dev/test tools
 pytest>=7.4.0
 black>=23.7.0
 flake8>=6.1.0

@@ -90,7 +90,7 @@ app.config.update(
 )
 
 # Configure Redis and rate limiting
-redis_url = os.environ.get('REDIS_URL', 'redis://localhost:6379')
+redis_url = os.environ.get('UPSTASH_REDIS_URL', 'memory://')
 limiter = Limiter(
     app=app,
     key_func=get_remote_address,
@@ -347,6 +347,7 @@ def recommend_cards_endpoint():
         return jsonify({"error": "Internal server error"}), 500
 
 @app.route('/create_link_token', methods=['OPTIONS', 'POST'])
+@limiter.exempt  # Add this line
 def create_link_token():
     if request.method == 'OPTIONS':
         # Handle preflight request
