@@ -66,13 +66,16 @@ app = Flask(__name__)
 CORS(app, resources={
     r"/*": {
         "origins": [
-            "http://localhost:3000",  # Local frontend (if used)
+            "http://localhost:3000",  # Local frontend (if using npm)
             "http://localhost:8080",  # Local frontend for testing
+            "http://localhost:5000",  # Python's built-in server
+            "http://localhost",       # Any localhost port
+            "http://127.0.0.1:5000",  # Alternative local address
             "https://dinero-frontend-500b23e1674a.herokuapp.com",  # Production frontend
             "http://cardmatcher.net", # Production URL
             "https://cardmatcher.net", # Production URL
             "http://www.cardmatcher.net", # Production URL
-            "https://www.cardmatcher.net" # Produiction URL
+            "https://www.cardmatcher.net" # Production URL
         ],
         "methods": ["GET", "POST", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"]
