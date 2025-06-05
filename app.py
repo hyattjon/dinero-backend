@@ -22,6 +22,7 @@ import random
 
 load_dotenv()
 
+# This version works
 # Add Plaid configuration
 PLAID_CLIENT_ID = os.environ.get('PLAID_CLIENT_ID')
 PLAID_SECRET = os.environ.get('PLAID_SECRET')
