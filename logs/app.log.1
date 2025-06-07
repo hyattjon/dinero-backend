@@ -1,90 +1,140 @@
-2025-05-30 11:27:37,248 INFO: Response status for amex-delta-reserve: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:599]
-2025-05-30 11:27:37,252 INFO: Successfully fetched data for amex-delta-reserve [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:602]
-2025-05-30 11:27:38,754 INFO: Fetching card details for amex-hilton-aspire [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:591]
-2025-05-30 11:27:38,756 INFO: Fetching card details for capital-one-spark-cash-plus [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:591]
-2025-05-30 11:27:39,296 INFO: Response status for capital-one-spark-cash-plus: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:599]
-2025-05-30 11:27:39,297 INFO: Successfully fetched data for capital-one-spark-cash-plus [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:602]
-2025-05-30 11:27:39,298 INFO: Response status for amex-hilton-aspire: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:599]
-2025-05-30 11:27:39,298 INFO: Successfully fetched data for amex-hilton-aspire [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:602]
-2025-05-30 12:14:16,034 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:322]
-2025-05-30 12:14:16,065 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
-2025-05-30 12:16:09,589 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:322]
-2025-05-30 12:16:09,611 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
-2025-05-30 12:17:25,702 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:322]
-2025-05-30 12:17:25,723 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
-2025-05-30 12:19:27,266 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:326]
-2025-05-30 12:19:27,287 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:797]
-2025-05-30 12:27:45,298 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:326]
-2025-05-30 12:27:45,328 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:805]
-2025-05-30 12:30:40,038 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:326]
-2025-05-30 12:30:40,074 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:806]
-2025-06-05 10:40:24,815 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:334]
-2025-06-05 10:40:24,849 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:832]
-2025-06-05 10:42:50,210 ERROR: Plaid API error: Status Code: 400
-Reason: Bad Request
-HTTP response headers: HTTPHeaderDict({'Server': 'nginx', 'Date': 'Thu, 05 Jun 2025 16:42:50 GMT', 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '349', 'Connection': 'keep-alive', 'plaid-version': '2020-09-14', 'x-envoy-upstream-service-time': '327', 'x-envoy-decorator-operation': 'default.svc-apiv2:8080/*'})
-HTTP response body: {
-  "display_message": null,
-  "documentation_url": "https://plaid.com/docs/?ref=error#item-errors",
-  "error_code": "PRODUCT_NOT_READY",
-  "error_message": "the requested product is not yet ready. please provide a webhook or try the request again later",
-  "error_type": "ITEM_ERROR",
-  "request_id": "TKaoiw4K6x0H2RF",
-  "suggested_action": null
-}
- [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:142]
-2025-06-05 10:42:50,211 WARNING: Failed to fetch Plaid transactions: Status Code: 400
-Reason: Bad Request
-HTTP response headers: HTTPHeaderDict({'Server': 'nginx', 'Date': 'Thu, 05 Jun 2025 16:42:50 GMT', 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '349', 'Connection': 'keep-alive', 'plaid-version': '2020-09-14', 'x-envoy-upstream-service-time': '327', 'x-envoy-decorator-operation': 'default.svc-apiv2:8080/*'})
-HTTP response body: {
-  "display_message": null,
-  "documentation_url": "https://plaid.com/docs/?ref=error#item-errors",
-  "error_code": "PRODUCT_NOT_READY",
-  "error_message": "the requested product is not yet ready. please provide a webhook or try the request again later",
-  "error_type": "ITEM_ERROR",
-  "request_id": "TKaoiw4K6x0H2RF",
-  "suggested_action": null
-}
- [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:662]
-2025-06-05 10:42:50,211 INFO: Using sample transactions instead [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:663]
-2025-06-05 10:42:50,212 INFO: Starting to fetch rewards data for 20 cards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:692]
-2025-06-05 10:42:50,258 INFO: Fetching card details for amex-gold [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:42:50,261 INFO: Fetching card details for chase-sapphire-preferred [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:42:51,072 INFO: Response status for amex-gold: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:42:51,072 INFO: Successfully fetched data for amex-gold [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
-2025-06-05 10:42:51,074 INFO: Response status for chase-sapphire-preferred: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:42:51,074 INFO: Successfully fetched data for chase-sapphire-preferred [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
-2025-06-05 10:42:52,576 INFO: Fetching card details for capital-one-venture-rewards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:42:52,578 INFO: Fetching card details for amex-platinum [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:42:53,117 INFO: Response status for capital-one-venture-rewards: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:42:53,117 INFO: Successfully fetched data for capital-one-venture-rewards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
-2025-06-05 10:42:53,123 INFO: Response status for amex-platinum: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:42:53,123 INFO: Successfully fetched data for amex-platinum [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
-2025-06-05 10:42:54,625 INFO: Fetching card details for citi-premier [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:42:54,627 INFO: Fetching card details for capital-one-venture-x [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:42:55,093 INFO: Response status for capital-one-venture-x: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:42:55,094 INFO: Successfully fetched data for capital-one-venture-x [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
-2025-06-05 10:42:55,156 INFO: Response status for citi-premier: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:42:55,156 INFO: Successfully fetched data for citi-premier [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
-2025-06-05 10:42:56,658 INFO: Fetching card details for discover-it-cash-back [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:42:56,660 INFO: Fetching card details for chase-freedom-unlimited [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:42:57,215 INFO: Response status for chase-freedom-unlimited: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:42:57,215 INFO: Successfully fetched data for chase-freedom-unlimited [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
-2025-06-05 10:42:57,216 INFO: Response status for discover-it-cash-back: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:42:57,217 INFO: Successfully fetched data for discover-it-cash-back [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
-2025-06-05 10:42:58,718 INFO: Fetching card details for citi-double-cash [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:42:58,720 INFO: Fetching card details for wells-fargo-active-cash [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:42:59,266 INFO: Response status for wells-fargo-active-cash: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:42:59,266 INFO: Successfully fetched data for wells-fargo-active-cash [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
-2025-06-05 10:42:59,331 INFO: Response status for citi-double-cash: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:42:59,331 INFO: Successfully fetched data for citi-double-cash [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
-2025-06-05 10:43:00,833 INFO: Fetching card details for amex-blue-cash-preferred [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:43:00,835 INFO: Fetching card details for bofa-premium-rewards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:43:01,309 INFO: Response status for amex-blue-cash-preferred: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:43:01,309 INFO: Successfully fetched data for amex-blue-cash-preferred [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
-2025-06-05 10:43:01,310 INFO: Response status for bofa-premium-rewards: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:43:01,310 INFO: Successfully fetched data for bofa-premium-rewards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
-2025-06-05 10:43:02,811 INFO: Fetching card details for capital-one-savor [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:43:02,813 INFO: Fetching card details for citi-custom-cash [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:43:03,319 INFO: Response status for capital-one-savor: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:43:03,319 INFO: Successfully fetched data for capital-one-savor [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
+2025-06-07 08:36:59,390 INFO: Response status for amex-platinum: 404 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:831]
+2025-06-07 08:36:59,395 ERROR: Error fetching amex-platinum: 404 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:837]
+2025-06-07 08:36:59,395 ERROR: Response content: <!DOCTYPE html>
+<html lang=en>
+<head>
+<meta charset=utf-8 />
+<meta name=viewport content="width=device-width, initial-scale=1.0" />
+<meta http-equiv=X-UA-Compatible content="IE=edge" />
+<title>Azure Static Web Apps - 404: Not found</title>
+<link rel="shortcut icon" href=https://appservice.azureedge.net/images/static-apps/v3/favicon.svg type=image/x-icon />
+<link rel=stylesheet href=https://ajax.aspnetcdn.com/ajax/bootstrap/5.2.3/css/bootstrap.min.css crossorigin=anonymous />
+<link rel=stylesheet type=text/css href="https://appservice.azureedge.net/css/static-apps/v3/main.css"/>
+<script src=https://appservice.azureedge.net/scripts/static-apps/v3/loc.min.js crossorigin=anonymous></script>
+<script type=text/javascript>window.onload=function(){try{loc("404notFound")}catch(a){}};</script>
+</head>
+<body>
+<nav class="navbar navbar-light ps-5 ms-5">
+<div class=navbar-brand>
+<div class="container pl-4 ml-5">
+<img src=https://appservice.azureedge.net/images/static-apps/v3/microsoft_azure_logo.svg width=270 height=108 alt />
+</div>
+</div>
+</nav>
+<div class="container-fluid container-height mr-2">
+<div class="pt-10 pb-10 mt-10 mb-10 d-xxs-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block" style=height:20px;width:100%;clear:both></div>
+<div class=row>
+<div class="row col-xs-12 col-sm-12 d-block d-lg-none d-xl-none d-md-block d-sm-block d-xs-block">
+<div class=text-center>
+<img src=https://appservice.azureedge.net/images/static-apps/v3/staticapps.svg />
+</div>
+</div>
+<div class="extra-pl-small-scr offset-xl-1 offset-lg-1 offset-md-2 offset-sm-2 offset-xs-4 col-xl-5 col-lg-5 col-md-10 col-sm-11 col-xs-11 div-vertical-center">
+<div class=container-fluid>
+<div class=row>
+<h2 id=titleText>404: Not Found</h2>
+</div>
+<br />
+<div class=row>
+<div id=subText class=sub-text>We couldnât find that page, please check the URL and try again.</div>
+</div>
+</div>
+</div>
+<div class="col-xl-5 col-lg-5 col-md-12 d-none d-lg-block">
+<div class=text-center>
+<img src=https://appservice.azureedge.net/images/static-apps/v3/staticapps.svg />
+</div>
+</div>
+<div class="col-xl-1 col-lg-1 col-md-1"></div>
+</div>
+</div>
+<script src=https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.7.1.min.js crossorigin=anonymous></script>
+<script src=https://ajax.aspnetcdn.com/ajax/bootstrap/5.2.3/bootstrap.min.js crossorigin=anonymous></script>
+</body>
+</html> [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:838]
+2025-06-07 08:36:59,396 INFO: Fetching card details for citi-premier [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:828]
+2025-06-07 08:36:59,728 INFO: Response status for citi-premier: 404 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:831]
+2025-06-07 08:36:59,728 ERROR: Error fetching citi-premier: 404 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:837]
+2025-06-07 08:36:59,728 ERROR: Response content: <!DOCTYPE html>
+<html lang=en>
+<head>
+<meta charset=utf-8 />
+<meta name=viewport content="width=device-width, initial-scale=1.0" />
+<meta http-equiv=X-UA-Compatible content="IE=edge" />
+<title>Azure Static Web Apps - 404: Not found</title>
+<link rel="shortcut icon" href=https://appservice.azureedge.net/images/static-apps/v3/favicon.svg type=image/x-icon />
+<link rel=stylesheet href=https://ajax.aspnetcdn.com/ajax/bootstrap/5.2.3/css/bootstrap.min.css crossorigin=anonymous />
+<link rel=stylesheet type=text/css href="https://appservice.azureedge.net/css/static-apps/v3/main.css"/>
+<script src=https://appservice.azureedge.net/scripts/static-apps/v3/loc.min.js crossorigin=anonymous></script>
+<script type=text/javascript>window.onload=function(){try{loc("404notFound")}catch(a){}};</script>
+</head>
+<body>
+<nav class="navbar navbar-light ps-5 ms-5">
+<div class=navbar-brand>
+<div class="container pl-4 ml-5">
+<img src=https://appservice.azureedge.net/images/static-apps/v3/microsoft_azure_logo.svg width=270 height=108 alt />
+</div>
+</div>
+</nav>
+<div class="container-fluid container-height mr-2">
+<div class="pt-10 pb-10 mt-10 mb-10 d-xxs-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block" style=height:20px;width:100%;clear:both></div>
+<div class=row>
+<div class="row col-xs-12 col-sm-12 d-block d-lg-none d-xl-none d-md-block d-sm-block d-xs-block">
+<div class=text-center>
+<img src=https://appservice.azureedge.net/images/static-apps/v3/staticapps.svg />
+</div>
+</div>
+<div class="extra-pl-small-scr offset-xl-1 offset-lg-1 offset-md-2 offset-sm-2 offset-xs-4 col-xl-5 col-lg-5 col-md-10 col-sm-11 col-xs-11 div-vertical-center">
+<div class=container-fluid>
+<div class=row>
+<h2 id=titleText>404: Not Found</h2>
+</div>
+<br />
+<div class=row>
+<div id=subText class=sub-text>We couldnât find that page, please check the URL and try again.</div>
+</div>
+</div>
+</div>
+<div class="col-xl-5 col-lg-5 col-md-12 d-none d-lg-block">
+<div class=text-center>
+<img src=https://appservice.azureedge.net/images/static-apps/v3/staticapps.svg />
+</div>
+</div>
+<div class="col-xl-1 col-lg-1 col-md-1"></div>
+</div>
+</div>
+<script src=https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.7.1.min.js crossorigin=anonymous></script>
+<script src=https://ajax.aspnetcdn.com/ajax/bootstrap/5.2.3/bootstrap.min.js crossorigin=anonymous></script>
+</body>
+</html> [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:838]
+2025-06-07 08:36:59,939 INFO: Stored card recommendations for user 918f441e-a6b2-4b3d-9837-c9c3d92851dc [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:958]
+2025-06-07 08:45:42,625 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:337]
+2025-06-07 08:45:42,645 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1054]
+2025-06-07 08:51:11,741 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:349]
+2025-06-07 08:51:11,761 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1066]
+2025-06-07 08:56:24,875 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:338]
+2025-06-07 08:56:24,895 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1055]
+2025-06-07 08:57:14,787 INFO: Starting to fetch rewards data for 20 cards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:898]
+2025-06-07 08:57:14,787 INFO: Fetching card details for amex-gold from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/amex-gold [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:838]
+2025-06-07 08:57:16,601 INFO: Response status for amex-gold: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:841]
+2025-06-07 08:57:16,601 INFO: Successfully fetched data for amex-gold [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:844]
+2025-06-07 08:57:16,602 INFO: Fetching card details for chase-sapphire-preferred from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/chase-sapphire-preferred [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:838]
+2025-06-07 08:57:17,421 INFO: Response status for chase-sapphire-preferred: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:841]
+2025-06-07 08:57:17,421 INFO: Successfully fetched data for chase-sapphire-preferred [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:844]
+2025-06-07 08:57:17,422 ERROR: Error processing card chase-sapphire-preferred: 'list' object has no attribute 'get' [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:930]
+2025-06-07 08:57:17,422 INFO: Fetching card details for capital-one-venture-rewards from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/capital-one-venture-rewards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:838]
+2025-06-07 08:57:18,034 INFO: Response status for capital-one-venture-rewards: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:841]
+2025-06-07 08:57:18,034 INFO: Successfully fetched data for capital-one-venture-rewards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:844]
+2025-06-07 08:57:18,035 ERROR: Error processing card capital-one-venture-rewards: 'list' object has no attribute 'get' [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:930]
+2025-06-07 08:57:18,035 INFO: Fetching card details for amex-platinum from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/amex-platinum [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:838]
+2025-06-07 08:57:18,594 INFO: Response status for amex-platinum: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:841]
+2025-06-07 08:57:18,594 INFO: Successfully fetched data for amex-platinum [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:844]
+2025-06-07 08:57:18,595 INFO: Fetching card details for citi-premier from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/citi-premier [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:838]
+2025-06-07 08:57:19,247 INFO: Response status for citi-premier: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:841]
+2025-06-07 08:57:19,248 INFO: Successfully fetched data for citi-premier [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:844]
+2025-06-07 08:57:19,573 INFO: Stored card recommendations for user 918f441e-a6b2-4b3d-9837-c9c3d92851dc [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:968]
+2025-06-07 09:08:40,499 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:151]
+2025-06-07 09:08:40,520 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1165]
+2025-06-07 09:10:55,505 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:151]
+2025-06-07 09:10:55,525 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1165]
+2025-06-07 09:13:18,680 INFO: Registration attempt: test1@gmail.com [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:600]
