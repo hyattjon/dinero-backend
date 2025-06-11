@@ -28,7 +28,7 @@ from functools import wraps
 from supabase import create_client, Client
 import uuid
 
-# This works now
+# This works now again
 # Environment variables and configuration
 load_dotenv()
 
