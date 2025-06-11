@@ -857,7 +857,7 @@ def google_auth():
             token, 
             google_requests.Request(), 
             GOOGLE_CLIENT_ID,
-            clock_skew_in_seconds=30  # Add tolerance for clock skew
+            clock_skew_in_seconds=30
         )
         
         # Get user info
@@ -868,24 +868,40 @@ def google_auth():
         # Check if user exists in Supabase
         user_query = supabase.table('users').select('*').eq('email', email).execute()
         
-        if not user_query.data:
+        is_new_user = not user_query.data
+        
+        if is_new_user:
             # Create user in Supabase
-            auth_user = supabase.auth.sign_up({
-                "email": email,
-                "password": secrets.token_urlsafe(16)  # Random password for OAuth users
-            })
-            
-            user_id = auth_user.user.id
-            
-            # Store user data in 'users' table
-            supabase.table('users').insert({
-                "id": user_id,
-                "email": email,
-                "name": name,
-                "created_at": datetime.datetime.now().isoformat(),
-                "auth_provider": "google",
-                "google_id": google_id
-            }).execute()
+            try:
+                auth_user = supabase.auth.sign_up({
+                    "email": email,
+                    "password": secrets.token_urlsafe(16)  # Random password for OAuth users
+                })
+                
+                user_id = auth_user.user.id
+                
+                # Store user data in 'users' table
+                supabase.table('users').insert({
+                    "id": user_id,
+                    "email": email,
+                    "name": name,
+                    "created_at": datetime.datetime.now().isoformat(),
+                    "auth_provider": "google",
+                    "google_id": google_id,
+                    "plan_tier": "free",
+                    "subscription_tier": "free",
+                    "subscription_status": "inactive"
+                }).execute()
+            except Exception as e:
+                app.logger.error(f"Error creating new user via Google: {str(e)}")
+                # Return specific error for new user that couldn't be created
+                return jsonify({
+                    "success": False, 
+                    "error": "Unable to create account",
+                    "is_new_user": True,
+                    "email": email,
+                    "name": name
+                }), 400
         else:
             user_id = user_query.data[0]['id']
             
@@ -894,22 +910,23 @@ def google_auth():
                 "last_login": datetime.datetime.now().isoformat()
             }).eq('id', user_id).execute()
         
-        # Generate JWT token WITH USER ID (this was missing)
+        # Generate JWT token with user ID
         token = jwt.encode({
-            'id': user_id,  # Include user ID in the token
+            'id': user_id,
             'email': email,
-            'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)  # 7-day expiration
+            'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
         }, JWT_SECRET, algorithm="HS256")
         
         response = jsonify({
             "success": True,
             "token": token,
-            "name": name
+            "name": name,
+            "is_new_user": is_new_user  # Add flag indicating if this is a new user
         })
         
         # Force CORS headers directly on this response
         origin = request.headers.get('Origin')
-        if origin in ["https://cardmatcher.net", "https://www.cardmatcher.net"]:
+        if origin in ["https://cardmatcher.net", "https://www.cardmatcher.net", "http://localhost:3000"]:
             response.headers['Access-Control-Allow-Origin'] = origin
             response.headers['Access-Control-Allow-Credentials'] = 'true'
             response.headers['Cross-Origin-Opener-Policy'] = 'same-origin-allow-popups'
@@ -926,6 +943,7 @@ def google_auth_options():
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
     response.headers.add('Access-Control-Allow-Credentials', 'true')
+    # Change this to support Google's auth popup
     response.headers.add('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
     return response
 
