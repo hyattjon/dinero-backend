@@ -1,109 +1,180 @@
-2025-06-05 13:15:21,187 ERROR: Exception on /auth/register [POST] [in /Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py:875]
+2025-06-06 17:20:38,598 ERROR: Exception on /fetch_all_card_rewards [GET] [in /Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py:875]
 Traceback (most recent call last):
   File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
     response = self.full_dispatch_request()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_cors/extension.py", line 176, in wrapped_function
-    return cors_after_request(app.make_response(f(*args, **kwargs)))
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-  File "/Users/jonathanhyatt/dinero/dinero-backend/app.py", line 378, in register
-    if not name or not email or not password:
-NameError: name 'users' is not defined
-2025-06-05 13:15:57,988 ERROR: Exception on /auth/register [POST] [in /Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py:875]
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_cors/extension.py", line 176, in wrapped_function
-    return cors_after_request(app.make_response(f(*args, **kwargs)))
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-  File "/Users/jonathanhyatt/dinero/dinero-backend/app.py", line 378, in register
-NameError: name 'users' is not defined
-2025-06-05 13:16:48,853 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:339]
-2025-06-05 13:16:48,884 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:932]
-2025-06-05 13:16:59,422 INFO: Registration attempt: hyatt.jonathan99@gmail.com [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:373]
-2025-06-05 13:16:59,422 ERROR: Registration error: module 'hashlib' has no attribute 'scrypt' [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:394]
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/dinero-backend/app.py", line 388, in register
-    "password": generate_password_hash(password)
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/werkzeug/security.py", line 108, in generate_password_hash
-    h, actual_method = _hash_internal(method, salt, password)
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/werkzeug/security.py", line 43, in _hash_internal
-    hashlib.scrypt(
-AttributeError: module 'hashlib' has no attribute 'scrypt'
-2025-06-05 14:20:48,233 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:350]
-2025-06-05 14:20:48,253 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:992]
-2025-06-05 14:21:03,746 INFO: Registration attempt: hyatt.jonathan99@gmail.com [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:391]
-2025-06-05 14:21:04,440 ERROR: Registration error: Password should be at least 6 characters. [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:422]
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/gotrue/_sync/gotrue_base_api.py", line 120, in _request
-    response.raise_for_status()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/httpx/_models.py", line 829, in raise_for_status
-    raise HTTPStatusError(message, request=request, response=self)
-httpx.HTTPStatusError: Client error '422 Unprocessable Entity' for url 'https://rjeojapejdfysdchwfek.supabase.co/auth/v1/signup'
-For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/dinero-backend/app.py", line 406, in register
-    signup_data = supabase.auth.sign_up({
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/gotrue/_sync/gotrue_client.py", line 217, in sign_up
-    response = self._request(
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/gotrue/_sync/gotrue_base_api.py", line 125, in _request
-    raise handle_exception(e)
-gotrue.errors.AuthWeakPasswordError: Password should be at least 6 characters.
-2025-06-05 14:21:19,278 INFO: Registration attempt: hyatt.jonathan99@gmail.com [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:391]
-2025-06-05 14:21:21,548 INFO: User registered: hyatt.jonathan99@gmail.com [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:419]
-2025-06-05 14:23:50,198 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:350]
-2025-06-05 14:23:50,217 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1008]
-2025-06-05 14:24:12,833 INFO: Registration attempt: hyatt.jonathan99@gmail.com [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:391]
-2025-06-06 16:58:17,778 ERROR: Login error: Email not confirmed [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:473]
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/gotrue/_sync/gotrue_base_api.py", line 120, in _request
-    response.raise_for_status()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/httpx/_models.py", line 829, in raise_for_status
-    raise HTTPStatusError(message, request=request, response=self)
-httpx.HTTPStatusError: Client error '400 Bad Request' for url 'https://rjeojapejdfysdchwfek.supabase.co/auth/v1/token?grant_type=password'
-For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/dinero-backend/app.py", line 454, in login
-    return jsonify({"success": False, "error": "Missing email or password"}), 400
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/gotrue/_sync/gotrue_client.py", line 270, in sign_in_with_password
-    response = self._request(
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/gotrue/_sync/gotrue_base_api.py", line 125, in _request
-    raise handle_exception(e)
-gotrue.errors.AuthApiError: Email not confirmed
-2025-06-06 16:58:27,913 ERROR: Login error: Email not confirmed [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:473]
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/gotrue/_sync/gotrue_base_api.py", line 120, in _request
-    response.raise_for_status()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/httpx/_models.py", line 829, in raise_for_status
-    raise HTTPStatusError(message, request=request, response=self)
-httpx.HTTPStatusError: Client error '400 Bad Request' for url 'https://rjeojapejdfysdchwfek.supabase.co/auth/v1/token?grant_type=password'
-For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/dinero-backend/app.py", line 454, in login
-    return jsonify({"success": False, "error": "Missing email or password"}), 400
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/gotrue/_sync/gotrue_client.py", line 270, in sign_in_with_password
-    response = self._request(
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/gotrue/_sync/gotrue_base_api.py", line 125, in _request
-    raise handle_exception(e)
-gotrue.errors.AuthApiError: Email not confirmed
-2025-06-06 16:58:38,060 INFO: Registration attempt: hyatt.jonathan99@gmail.com [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:391]
-2025-06-06 17:00:33,630 INFO: Registration attempt: hyatt.jonathan99@gmail.co [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:391]
-2025-06-06 17:00:34,886 INFO: User registered: hyatt.jonathan99@gmail.co [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:426]
+  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 920, in full_dispatch_request
+    return self.finalize_request(rv)
+  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 939, in finalize_request
+    response = self.make_response(rv)
+  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 1249, in make_response
+    raise TypeError(
+TypeError: The view function did not return a valid response. The return type must be a string, dict, list, tuple with headers or status, Response instance, or WSGI callable, but it was a coroutine.
+2025-06-07 08:35:55,287 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:337]
+2025-06-07 08:35:55,307 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1045]
+2025-06-07 08:36:58,338 INFO: Starting to fetch rewards data for 20 cards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:888]
+2025-06-07 08:36:58,339 INFO: Fetching card details for amex-gold [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:828]
+2025-06-07 08:36:58,690 INFO: Response status for amex-gold: 404 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:831]
+2025-06-07 08:36:58,690 ERROR: Error fetching amex-gold: 404 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:837]
+2025-06-07 08:36:58,691 ERROR: Response content: <!DOCTYPE html>
+<html lang=en>
+<head>
+<meta charset=utf-8 />
+<meta name=viewport content="width=device-width, initial-scale=1.0" />
+<meta http-equiv=X-UA-Compatible content="IE=edge" />
+<title>Azure Static Web Apps - 404: Not found</title>
+<link rel="shortcut icon" href=https://appservice.azureedge.net/images/static-apps/v3/favicon.svg type=image/x-icon />
+<link rel=stylesheet href=https://ajax.aspnetcdn.com/ajax/bootstrap/5.2.3/css/bootstrap.min.css crossorigin=anonymous />
+<link rel=stylesheet type=text/css href="https://appservice.azureedge.net/css/static-apps/v3/main.css"/>
+<script src=https://appservice.azureedge.net/scripts/static-apps/v3/loc.min.js crossorigin=anonymous></script>
+<script type=text/javascript>window.onload=function(){try{loc("404notFound")}catch(a){}};</script>
+</head>
+<body>
+<nav class="navbar navbar-light ps-5 ms-5">
+<div class=navbar-brand>
+<div class="container pl-4 ml-5">
+<img src=https://appservice.azureedge.net/images/static-apps/v3/microsoft_azure_logo.svg width=270 height=108 alt />
+</div>
+</div>
+</nav>
+<div class="container-fluid container-height mr-2">
+<div class="pt-10 pb-10 mt-10 mb-10 d-xxs-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block" style=height:20px;width:100%;clear:both></div>
+<div class=row>
+<div class="row col-xs-12 col-sm-12 d-block d-lg-none d-xl-none d-md-block d-sm-block d-xs-block">
+<div class=text-center>
+<img src=https://appservice.azureedge.net/images/static-apps/v3/staticapps.svg />
+</div>
+</div>
+<div class="extra-pl-small-scr offset-xl-1 offset-lg-1 offset-md-2 offset-sm-2 offset-xs-4 col-xl-5 col-lg-5 col-md-10 col-sm-11 col-xs-11 div-vertical-center">
+<div class=container-fluid>
+<div class=row>
+<h2 id=titleText>404: Not Found</h2>
+</div>
+<br />
+<div class=row>
+<div id=subText class=sub-text>We couldnât find that page, please check the URL and try again.</div>
+</div>
+</div>
+</div>
+<div class="col-xl-5 col-lg-5 col-md-12 d-none d-lg-block">
+<div class=text-center>
+<img src=https://appservice.azureedge.net/images/static-apps/v3/staticapps.svg />
+</div>
+</div>
+<div class="col-xl-1 col-lg-1 col-md-1"></div>
+</div>
+</div>
+<script src=https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.7.1.min.js crossorigin=anonymous></script>
+<script src=https://ajax.aspnetcdn.com/ajax/bootstrap/5.2.3/bootstrap.min.js crossorigin=anonymous></script>
+</body>
+</html> [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:838]
+2025-06-07 08:36:58,692 INFO: Fetching card details for chase-sapphire-preferred [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:828]
+2025-06-07 08:36:58,920 INFO: Response status for chase-sapphire-preferred: 404 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:831]
+2025-06-07 08:36:58,921 ERROR: Error fetching chase-sapphire-preferred: 404 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:837]
+2025-06-07 08:36:58,921 ERROR: Response content: <!DOCTYPE html>
+<html lang=en>
+<head>
+<meta charset=utf-8 />
+<meta name=viewport content="width=device-width, initial-scale=1.0" />
+<meta http-equiv=X-UA-Compatible content="IE=edge" />
+<title>Azure Static Web Apps - 404: Not found</title>
+<link rel="shortcut icon" href=https://appservice.azureedge.net/images/static-apps/v3/favicon.svg type=image/x-icon />
+<link rel=stylesheet href=https://ajax.aspnetcdn.com/ajax/bootstrap/5.2.3/css/bootstrap.min.css crossorigin=anonymous />
+<link rel=stylesheet type=text/css href="https://appservice.azureedge.net/css/static-apps/v3/main.css"/>
+<script src=https://appservice.azureedge.net/scripts/static-apps/v3/loc.min.js crossorigin=anonymous></script>
+<script type=text/javascript>window.onload=function(){try{loc("404notFound")}catch(a){}};</script>
+</head>
+<body>
+<nav class="navbar navbar-light ps-5 ms-5">
+<div class=navbar-brand>
+<div class="container pl-4 ml-5">
+<img src=https://appservice.azureedge.net/images/static-apps/v3/microsoft_azure_logo.svg width=270 height=108 alt />
+</div>
+</div>
+</nav>
+<div class="container-fluid container-height mr-2">
+<div class="pt-10 pb-10 mt-10 mb-10 d-xxs-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block" style=height:20px;width:100%;clear:both></div>
+<div class=row>
+<div class="row col-xs-12 col-sm-12 d-block d-lg-none d-xl-none d-md-block d-sm-block d-xs-block">
+<div class=text-center>
+<img src=https://appservice.azureedge.net/images/static-apps/v3/staticapps.svg />
+</div>
+</div>
+<div class="extra-pl-small-scr offset-xl-1 offset-lg-1 offset-md-2 offset-sm-2 offset-xs-4 col-xl-5 col-lg-5 col-md-10 col-sm-11 col-xs-11 div-vertical-center">
+<div class=container-fluid>
+<div class=row>
+<h2 id=titleText>404: Not Found</h2>
+</div>
+<br />
+<div class=row>
+<div id=subText class=sub-text>We couldnât find that page, please check the URL and try again.</div>
+</div>
+</div>
+</div>
+<div class="col-xl-5 col-lg-5 col-md-12 d-none d-lg-block">
+<div class=text-center>
+<img src=https://appservice.azureedge.net/images/static-apps/v3/staticapps.svg />
+</div>
+</div>
+<div class="col-xl-1 col-lg-1 col-md-1"></div>
+</div>
+</div>
+<script src=https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.7.1.min.js crossorigin=anonymous></script>
+<script src=https://ajax.aspnetcdn.com/ajax/bootstrap/5.2.3/bootstrap.min.js crossorigin=anonymous></script>
+</body>
+</html> [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:838]
+2025-06-07 08:36:58,922 INFO: Fetching card details for capital-one-venture-rewards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:828]
+2025-06-07 08:36:59,151 INFO: Response status for capital-one-venture-rewards: 404 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:831]
+2025-06-07 08:36:59,151 ERROR: Error fetching capital-one-venture-rewards: 404 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:837]
+2025-06-07 08:36:59,151 ERROR: Response content: <!DOCTYPE html>
+<html lang=en>
+<head>
+<meta charset=utf-8 />
+<meta name=viewport content="width=device-width, initial-scale=1.0" />
+<meta http-equiv=X-UA-Compatible content="IE=edge" />
+<title>Azure Static Web Apps - 404: Not found</title>
+<link rel="shortcut icon" href=https://appservice.azureedge.net/images/static-apps/v3/favicon.svg type=image/x-icon />
+<link rel=stylesheet href=https://ajax.aspnetcdn.com/ajax/bootstrap/5.2.3/css/bootstrap.min.css crossorigin=anonymous />
+<link rel=stylesheet type=text/css href="https://appservice.azureedge.net/css/static-apps/v3/main.css"/>
+<script src=https://appservice.azureedge.net/scripts/static-apps/v3/loc.min.js crossorigin=anonymous></script>
+<script type=text/javascript>window.onload=function(){try{loc("404notFound")}catch(a){}};</script>
+</head>
+<body>
+<nav class="navbar navbar-light ps-5 ms-5">
+<div class=navbar-brand>
+<div class="container pl-4 ml-5">
+<img src=https://appservice.azureedge.net/images/static-apps/v3/microsoft_azure_logo.svg width=270 height=108 alt />
+</div>
+</div>
+</nav>
+<div class="container-fluid container-height mr-2">
+<div class="pt-10 pb-10 mt-10 mb-10 d-xxs-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block" style=height:20px;width:100%;clear:both></div>
+<div class=row>
+<div class="row col-xs-12 col-sm-12 d-block d-lg-none d-xl-none d-md-block d-sm-block d-xs-block">
+<div class=text-center>
+<img src=https://appservice.azureedge.net/images/static-apps/v3/staticapps.svg />
+</div>
+</div>
+<div class="extra-pl-small-scr offset-xl-1 offset-lg-1 offset-md-2 offset-sm-2 offset-xs-4 col-xl-5 col-lg-5 col-md-10 col-sm-11 col-xs-11 div-vertical-center">
+<div class=container-fluid>
+<div class=row>
+<h2 id=titleText>404: Not Found</h2>
+</div>
+<br />
+<div class=row>
+<div id=subText class=sub-text>We couldnât find that page, please check the URL and try again.</div>
+</div>
+</div>
+</div>
+<div class="col-xl-5 col-lg-5 col-md-12 d-none d-lg-block">
+<div class=text-center>
+<img src=https://appservice.azureedge.net/images/static-apps/v3/staticapps.svg />
+</div>
+</div>
+<div class="col-xl-1 col-lg-1 col-md-1"></div>
+</div>
+</div>
+<script src=https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.7.1.min.js crossorigin=anonymous></script>
+<script src=https://ajax.aspnetcdn.com/ajax/bootstrap/5.2.3/bootstrap.min.js crossorigin=anonymous></script>
+</body>
+</html> [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:838]
+2025-06-07 08:36:59,152 INFO: Fetching card details for amex-platinum [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:828]

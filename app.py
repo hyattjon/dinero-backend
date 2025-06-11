@@ -30,10 +30,19 @@ import uuid
 # Environment variables and configuration
 load_dotenv()
 
-# Plaid configuration
-PLAID_CLIENT_ID = os.environ.get('PLAID_CLIENT_ID')
-PLAID_SECRET = os.environ.get('PLAID_SECRET')
-PLAID_ENV = os.environ.get('PLAID_ENV', 'sandbox')
+# Define configuration object for Plaid and other services
+CONFIG = {
+    'PLAID_CLIENT_ID': os.environ.get('PLAID_CLIENT_ID'),
+    'PLAID_SECRET': os.environ.get('PLAID_SECRET'),
+    'PLAID_ENV': os.environ.get('PLAID_ENV', 'sandbox'),
+    'PLAID_PRODUCTS': ['transactions'],
+    'PLAID_COUNTRY_CODES': ['US'],
+    'PLAID_WEBHOOK': os.environ.get('PLAID_WEBHOOK', ''),  # Optional webhook URL
+    'PLAID_REDIRECT_URI': os.environ.get('PLAID_REDIRECT_URI', ''),
+    'REWARDS_CC_API_KEY': os.environ.get('REWARDS_CC_API_KEY'),
+    'REWARDS_CC_API_HOST': os.environ.get('REWARDS_CC_API_HOST'),
+    'REWARDS_CC_BASE_URL': os.environ.get('REWARDS_CC_BASE_URL')
+}
 
 # RapidAPI configuration
 REWARDS_CC_API_KEY = os.environ.get('REWARDS_CC_API_KEY')
@@ -72,8 +81,8 @@ users = {}
 
 # Validate required environment variables
 required_env_vars = {
-    'PLAID_CLIENT_ID': PLAID_CLIENT_ID,
-    'PLAID_SECRET': PLAID_SECRET,
+    'PLAID_CLIENT_ID': CONFIG['PLAID_CLIENT_ID'],
+    'PLAID_SECRET': CONFIG['PLAID_SECRET'],
     'REWARDS_CC_API_KEY': REWARDS_CC_API_KEY,
     'REWARDS_CC_API_HOST': REWARDS_CC_API_HOST,
     'REWARDS_CC_BASE_URL': REWARDS_CC_BASE_URL,
@@ -90,8 +99,8 @@ if missing_vars:
 configuration = plaid.Configuration(
     host=plaid.Environment.Sandbox,
     api_key={
-        'clientId': PLAID_CLIENT_ID,
-        'secret': PLAID_SECRET,
+        'clientId': CONFIG['PLAID_CLIENT_ID'],
+        'secret': CONFIG['PLAID_SECRET'],
         'plaidVersion': '2020-09-14'  # Add API version
     }
 )
@@ -108,7 +117,10 @@ app = Flask(__name__)
 # Set up CORS properly with specific origins
 CORS(app, 
      resources={r"/*": {
-         "origins": ["http://localhost:3000", "http://127.0.0.1:3000"],
+         "origins": ["http://localhost:3000", 
+                     "http://127.0.0.1:3000", 
+                     "https://cardmatcher.net",
+                     "https://www.cardmatcher.net"],
      }},
      supports_credentials=True,
      allow_headers=["Content-Type", "Authorization"])
@@ -555,32 +567,63 @@ def token_required(f):
         token = None
         auth_header = request.headers.get('Authorization')
         
+        app.logger.info(f"Auth header: {auth_header}")
+        
         if auth_header and auth_header.startswith('Bearer '):
             token = auth_header.split(' ')[1]
-            
+        
         if not token:
+            app.logger.error("Token is missing")
             return jsonify({"error": "Token is missing"}), 401
-            
+        
         try:
-            # Verify token with Supabase
-            user_response = supabase.auth.get_user(token)
-            if not user_response or not user_response.user:
-                return jsonify({"error": "User not found"}), 401
+            # Verify token
+            app.logger.info(f"Verifying token: {token[:10]}...")
+            
+            # First try our own JWT verification
+            try:
+                decoded_token = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+                app.logger.info(f"Decoded token: {decoded_token}")
                 
-            # Fixed: Access id through user property
-            user_id = user_response.user.id
+                # Pass the user information to the decorated function
+                return f({'id': decoded_token.get('id'), 'email': decoded_token.get('email')}, *args, **kwargs)
+            except jwt.InvalidTokenError as e:
+                # If our verification fails and the token might be a Supabase token, try to get the user ID from Supabase
+                app.logger.warning(f"Our JWT verification failed, trying Supabase session: {str(e)}")
                 
-            # Get user data
-            user_query = supabase.table('users').select('*').eq('id', user_id).execute()
-            if not user_query.data:
-                return jsonify({"error": "User not found in database"}), 401
+                # Extract user ID from Supabase token (this is just a backup)
+                try:
+                    # Use the token to get user info from Supabase
+                    user = supabase.auth.get_user(token)
+                    user_id = user.user.id
+                    email = user.user.email
+                    
+                    # Generate our own token for future use
+                    new_token = jwt.encode({
+                        'id': user_id,
+                        'email': email,
+                        'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
+                    }, JWT_SECRET, algorithm="HS256")
+                    
+                    # Return the function result with a header asking client to update token
+                    response = f({'id': user_id, 'email': email}, *args, **kwargs)
+                    if isinstance(response, tuple):
+                        json_response, status_code = response
+                        # Add token to response
+                        json_response['new_token'] = new_token
+                        return jsonify(json_response), status_code
+                    else:
+                        # Add token to response
+                        response_data = response.get_json()
+                        response_data['new_token'] = new_token
+                        return jsonify(response_data)
+                except Exception as supabase_error:
+                    app.logger.error(f"Supabase token verification failed: {str(supabase_error)}")
+                    return jsonify({"error": "Invalid token"}), 401
                 
-            current_user = user_query.data[0]
         except Exception as e:
             app.logger.error(f"Token verification error: {str(e)}")
-            return jsonify({"error": "Token is invalid"}), 401
-            
-        return f(current_user, *args, **kwargs)
+            return jsonify({"error": "Authentication failed"}), 401
     
     return decorated
 
@@ -669,6 +712,7 @@ def register():
 @limiter.exempt
 def login():
     try:
+        # Get login credentials
         data = request.get_json()
         email = data.get('email')
         password = data.get('password')
@@ -676,28 +720,39 @@ def login():
         if not email or not password:
             return jsonify({"success": False, "error": "Missing email or password"}), 400
         
-        # Login with Supabase Auth
+        # Authenticate with Supabase
         login_response = supabase.auth.sign_in_with_password({
             "email": email,
             "password": password
         })
         
-        # Update last login
-        supabase.table('users').update({"last_login": datetime.datetime.now().isoformat()}) \
-            .eq('id', login_response.user.id).execute()
+        # Don't use the Supabase token directly, create our own
+        user_id = login_response.user.id
         
-        # Get user data
-        user_query = supabase.table('users').select('name').eq('id', login_response.user.id).execute()
+        # Update last login time
+        supabase.table('users').update({
+            "last_login": datetime.datetime.now().isoformat()
+        }).eq('id', user_id).execute()
+        
+        # Get user name
+        user_query = supabase.table('users').select('name').eq('id', user_id).execute()
         name = user_query.data[0]['name'] if user_query.data else email.split('@')[0]
+        
+        # Generate our own JWT token with our secret
+        token = jwt.encode({
+            'id': user_id,
+            'email': email,
+            'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
+        }, JWT_SECRET, algorithm="HS256")
         
         return jsonify({
             "success": True,
-            "token": login_response.session.access_token,
+            "token": token,
             "name": name
         })
     except Exception as e:
-        app.logger.error(f"Login error: {str(e)}", exc_info=True)
-        return jsonify({"success": False, "error": "Invalid credentials"}), 401
+        app.logger.error(f"Login error: {str(e)}")
+        return jsonify({"success": False, "error": "Login failed"}), 401
 
 @app.route("/auth/google", methods=["POST"])
 @limiter.exempt
@@ -706,25 +761,53 @@ def google_auth():
         data = request.get_json()
         token = data.get('token')
         
-        # Verify the token
-        idinfo = id_token.verify_oauth2_token(token, google_requests.Request(), GOOGLE_CLIENT_ID)
+        # Verify the token with clock skew allowance
+        idinfo = id_token.verify_oauth2_token(
+            token, 
+            google_requests.Request(), 
+            GOOGLE_CLIENT_ID,
+            clock_skew_in_seconds=30  # Add tolerance for clock skew
+        )
         
         # Get user info
         email = idinfo['email']
         name = idinfo['name']
+        google_id = idinfo['sub']
         
-        # Create user if not exists
-        if email not in users:
-            users[email] = {
-                "name": name,
+        # Check if user exists in Supabase
+        user_query = supabase.table('users').select('*').eq('email', email).execute()
+        
+        if not user_query.data:
+            # Create user in Supabase
+            auth_user = supabase.auth.sign_up({
                 "email": email,
-                "google_id": idinfo['sub']
-            }
+                "password": secrets.token_urlsafe(16)  # Random password for OAuth users
+            })
+            
+            user_id = auth_user.user.id
+            
+            # Store user data in 'users' table
+            supabase.table('users').insert({
+                "id": user_id,
+                "email": email,
+                "name": name,
+                "created_at": datetime.datetime.now().isoformat(),
+                "auth_provider": "google",
+                "google_id": google_id
+            }).execute()
+        else:
+            user_id = user_query.data[0]['id']
+            
+            # Update last login
+            supabase.table('users').update({
+                "last_login": datetime.datetime.now().isoformat()
+            }).eq('id', user_id).execute()
         
-        # Generate JWT token
+        # Generate JWT token WITH USER ID (this was missing)
         token = jwt.encode({
+            'id': user_id,  # Include user ID in the token
             'email': email,
-            'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=24)
+            'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)  # 7-day expiration
         }, JWT_SECRET, algorithm="HS256")
         
         return jsonify({
@@ -734,33 +817,57 @@ def google_auth():
         })
     except Exception as e:
         app.logger.error(f"Google auth error: {str(e)}")
-        return jsonify({"success": False, "error": "Invalid token"}), 401
+        return jsonify({"success": False, "error": "Authentication failed"}), 401
 
 @app.route("/create_link_token", methods=["POST"])
-@limiter.exempt
 @token_required
 def create_link_token(current_user):
-    """Create a Plaid link token for the current user"""
     try:
-        # Configure Plaid link
-        client_user_id = f"user-{current_user['id']}"
-        request_config = {
-            'user': {'client_user_id': client_user_id},
-            'client_name': "Card Matcher",
-            'products': ["transactions"],
-            'country_codes': ["US"],
-            'language': "en"
+        app.logger.info(f"Creating link token for user {current_user['id']}")
+        
+        # Create link token with Plaid
+        client_user_id = current_user['id']
+        
+        # Configure Plaid token request
+        request_data = {
+            'user': {
+                'client_user_id': client_user_id
+            },
+            'client_name': 'Card Matcher',
+            'products': CONFIG['PLAID_PRODUCTS'],
+            'language': 'en',
+            'country_codes': CONFIG['PLAID_COUNTRY_CODES']
         }
         
-        # Create link token
-        response = client.link_token_create(request_config)
-        return jsonify({"link_token": response['link_token']})
+        # Only add webhook if it exists
+        if CONFIG['PLAID_WEBHOOK']:
+            request_data['webhook'] = CONFIG['PLAID_WEBHOOK']
+        
+        app.logger.info(f"Plaid link token request: {request_data}")
+        
+        # Create the link token
+        link_token_response = client.link_token_create(request_data)
+        link_token = link_token_response['link_token']
+        
+        app.logger.info(f"Successfully created link token")
+        
+        # Return the link token
+        return jsonify({
+            'success': True,
+            'link_token': link_token
+        })
     except plaid.ApiException as e:
-        app.logger.error(f'Error creating link token: {str(e)}')
-        return jsonify({"error": str(e)}), 500
+        app.logger.error(f"Plaid API error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': f"Failed to create link token: {e.body}"
+        }), 500
     except Exception as e:
-        app.logger.error(f'Unexpected error creating link token: {str(e)}')
-        return jsonify({"error": "An unexpected error occurred"}), 500
+        app.logger.error(f"Error creating link token: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': f"Failed to create link token: {str(e)}"
+        }), 500
 
 @app.route("/recommend_cards", methods=["POST"])
 @limiter.limit("5 per minute")
@@ -1150,6 +1257,18 @@ def get_recommendation_by_id(current_user, recommendation_id):
             "success": False,
             "error": str(e)
         }), 500
+
+@app.after_request
+def add_cors_headers(response):
+    """Add necessary CORS headers to all responses"""
+    # Allow popups for Google authentication
+    response.headers['Cross-Origin-Opener-Policy'] = 'same-origin-allow-popups'
+    
+    # Add other security headers as needed
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    
+    return response
 
 # Main application entry point
 from hypercorn.config import Config
