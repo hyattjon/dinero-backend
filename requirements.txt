@@ -36,3 +36,6 @@ python-dotenv>=1.0.0
 
 # Server
 gunicorn>=21.2.0
+
+# Payment processing
+stripe==7.9.0

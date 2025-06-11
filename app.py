@@ -27,6 +27,7 @@ from google.auth.transport import requests as google_requests
 from functools import wraps
 from supabase import create_client, Client
 import uuid
+import stripe
 
 # This works now again
 # Environment variables and configuration
@@ -58,6 +59,53 @@ SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
 # JWT configuration
 JWT_SECRET = os.environ.get('JWT_SECRET', secrets.token_urlsafe(32))
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
+
+# Add with other configuration
+
+
+# Stripe configuration
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '')
+STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY', '')
+STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', '')
+STRIPE_PRICE_BASIC = os.environ.get('STRIPE_PRICE_BASIC', '')
+STRIPE_PRICE_PRO = os.environ.get('STRIPE_PRICE_PRO', '')
+
+# Define subscription plans
+PAYMENT_PLANS = {
+    'free': {
+        'name': 'Free',
+        'price': 0,
+        'features': [
+            'Basic card recommendations',
+            'Connect one bank account',
+            'View top 3 card matches'
+        ]
+    },
+    'basic': {
+        'name': 'Basic',
+        'price': 5,
+        'stripe_price_id': STRIPE_PRICE_BASIC if STRIPE_PRICE_BASIC else None,
+        'features': [
+            'All Free features',
+            'Connect multiple bank accounts',
+            'View all card recommendations',
+            'Detailed rewards analysis'
+        ]
+    },
+    'pro': {
+        'name': 'Pro',
+        'price': 20,
+        'stripe_price_id': STRIPE_PRICE_PRO if STRIPE_PRICE_PRO else None,
+        'features': [
+            'All Basic features',
+            'Custom card scoring',
+            'Advanced category analysis',
+            'Annual spending projections',
+            'Priority support'
+        ]
+    }
+}
+
 
 # Add debug logging
 print("=== Environment Variables Debug ===")
@@ -113,6 +161,12 @@ client = plaid_api.PlaidApi(api_client)
 # Initialize Supabase client
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+# Initialize Stripe
+if STRIPE_SECRET_KEY:
+    stripe.api_key = STRIPE_SECRET_KEY
+else:
+    print("Stripe secret key not found. Stripe functionality will be disabled.")
+
 # Initialize Flask app and extensions
 app = Flask(__name__)
 
@@ -134,6 +188,12 @@ CORS(app,
 
 # Disable SSL requirement for local development
 app.config['TALISMAN_ENABLED'] = False
+
+# Initialize Stripe client if key exists
+if STRIPE_SECRET_KEY:
+    stripe.api_key = STRIPE_SECRET_KEY
+else:
+    app.logger.warning("Stripe secret key not found. Stripe functionality will be disabled.")
 
 # Secure configurations
 app.config.update(
@@ -343,7 +403,7 @@ def calculate_card_rewards(transactions, card):
         'category_rewards': {k: round(v, 2) for k, v in category_rewards.items()},
         'effective_rate': round(total_rewards / sum(abs(float(t.get('amount', 0))) for t in transactions) * 100, 2),
         'spending_limits': {k: {'spent': v, 'limit': detailed_rewards[k].get('spendLimit')} 
-                          for k, v in running_totals.items()}
+                          for k, v in running_totals.items() if k in detailed_rewards}
     }
 
 def analyze_transactions(transactions):
@@ -1308,34 +1368,215 @@ def get_recommendation_by_id(current_user, recommendation_id):
             "error": str(e)
         }), 500
 
-@app.before_request
-def log_request_info():
-    app.logger.info(f"Request path: {request.path}, method: {request.method}")
-    app.logger.info(f"Request headers: {dict(request.headers)}")
+@app.route('/plans', methods=['GET'])
+def get_plans():
+    """Return all payment plans"""
+    return jsonify({
+        'success': True,
+        'plans': PAYMENT_PLANS
+    })
 
-@app.after_request
-def log_response_info(response):
-    app.logger.info(f"Response headers: {dict(response.headers)}")
-    return response
+@app.route('/create-checkout-session', methods=['POST'])
+@token_required
+def create_checkout_session(current_user):
+    """Create a Stripe checkout session for one-time payment"""
+    try:
+        data = request.get_json()
+        plan_id = data.get('plan_id')
+        
+        if plan_id not in ['basic', 'pro']:
+            return jsonify({'error': 'Invalid plan selected'}), 400
+            
+        plan = PAYMENT_PLANS[plan_id]
+        
+        if not STRIPE_SECRET_KEY:
+            return jsonify({'error': 'Stripe is not configured'}), 500
 
-@app.after_request
-def cors_debugging(response):
-    origin = request.headers.get('Origin')
-    app.logger.info(f"Request from origin: {origin}")
-    app.logger.info(f"CORS headers being sent: {dict(response.headers)}")
-    return response
+        # Get customer ID or create one
+        user_data = supabase.table('users').select('stripe_customer_id').eq('id', current_user['id']).execute()
+        
+        customer_id = None
+        customer_exists_in_stripe = False
+        
+        if user_data.data and user_data.data[0].get('stripe_customer_id'):
+            stored_customer_id = user_data.data[0]['stripe_customer_id']
+            
+            # Check if the customer still exists in Stripe
+            try:
+                stripe.Customer.retrieve(stored_customer_id)
+                customer_id = stored_customer_id
+                customer_exists_in_stripe = True
+            except stripe.error.InvalidRequestError as e:
+                # Customer doesn't exist in Stripe, we'll create a new one
+                app.logger.warning(f"Customer {stored_customer_id} not found in Stripe: {str(e)}")
+        
+        # Create a new customer if needed
+        if not customer_exists_in_stripe:
+            # Create a new customer
+            customer = stripe.Customer.create(
+                email=current_user.get('email'),
+                name=current_user.get('name', 'Card Matcher User'),
+                metadata={'user_id': current_user['id']}
+            )
+            customer_id = customer.id
+            
+            # Update user with new Stripe customer ID
+            supabase.table('users').update({'stripe_customer_id': customer_id}).eq('id', current_user['id']).execute()
+            app.logger.info(f"Created new Stripe customer {customer_id} for user {current_user['id']}")
 
-# Main application entry point
-from hypercorn.config import Config
-from hypercorn.asyncio import serve
+        # Create checkout session for one-time payment
+        checkout_session = stripe.checkout.Session.create(
+            customer=customer_id,
+            payment_method_types=['card'],
+            line_items=[{
+                'price': plan['stripe_price_id'],
+                'quantity': 1,
+            }],
+            mode='payment',  # Changed from 'subscription' to 'payment'
+            success_url=request.headers.get('Origin', '') + '/dashboard.html?payment=success&plan=' + plan_id,
+            cancel_url=request.headers.get('Origin', '') + '/pricing.html?payment=canceled',
+            metadata={
+                'user_id': current_user['id'],
+                'plan_id': plan_id
+            }
+        )
+        
+        return jsonify({'success': True, 'session_id': checkout_session.id})
+        
+    except Exception as e:
+        app.logger.error(f"Error creating checkout session: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
-if __name__ == "__main__":
-    import asyncio
+@app.route('/customer-portal', methods=['POST'])
+@token_required
+def customer_portal(current_user):
+    """Create a customer portal session for managing subscription"""
+    try:
+        # Get customer ID
+        user_data = supabase.table('users').select('stripe_customer_id').eq('id', current_user['id']).execute()
+        
+        if not user_data.data or not user_data.data[0].get('stripe_customer_id'):
+            return jsonify({'error': 'No subscription found'}), 404
+            
+        customer_id = user_data.data[0]['stripe_customer_id']
+        
+        # Create portal session
+        session = stripe.billing_portal.Session.create(
+            customer=customer_id,
+            return_url=request.headers.get('Origin', '') + '/dashboard.html',
+        )
+        
+        return jsonify({'success': True, 'url': session.url})
+        
+    except Exception as e:
+        app.logger.error(f"Error creating portal session: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/webhook', methods=['POST'])
+def stripe_webhook():
+    """Handle Stripe webhooks for one-time payments"""
+    payload = request.data
+    sig_header = request.headers.get('Stripe-Signature')
     
-    config = Config()
-    config.bind = ["0.0.0.0:5001"]
-    config.use_reloader = True
+    try:
+        if not STRIPE_WEBHOOK_SECRET:
+            raise ValueError("Webhook secret not configured")
+            
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, STRIPE_WEBHOOK_SECRET
+        )
+        
+        # Handle the event
+        if event['type'] == 'checkout.session.completed':
+            session = event['data']['object']
+            
+            # Only handle payment mode sessions
+            if session.get('mode') == 'payment':
+                record_payment(session)
+                
+        return jsonify({'status': 'success'})
+        
+    except Exception as e:
+        app.logger.error(f"Webhook error: {str(e)}")
+        return jsonify({'error': str(e)}), 400
+
+def record_payment(session):
+    """Record successful one-time payment"""
+    # Get data from session
+    customer_id = session.get('customer')
+    metadata = session.get('metadata', {})
+    plan_id = metadata.get('plan_id')
+    user_id = metadata.get('user_id')
     
-    app.logger.info("Starting Hypercorn server...")
-    asyncio.run(serve(app, config))
+    if not customer_id or not plan_id or not user_id:
+        app.logger.error(f"Missing required data in session: {session.id}")
+        return
+    
+    # Insert payment record
+    try:
+        # Record the payment
+        payment_id = uuid.uuid4()
+        
+        supabase.table('payments').insert({
+            "id": str(payment_id),
+            "user_id": user_id,
+            "stripe_session_id": session.id,
+            "stripe_payment_intent": session.get('payment_intent'),
+            "plan_id": plan_id,
+            "amount": session.get('amount_total') / 100.0,  # Convert from cents
+            "created_at": datetime.datetime.now().isoformat(),
+            "status": "completed"
+        }).execute()
+        
+        # Update the user's plan
+        supabase.table('users').update({
+            'plan_tier': plan_id,
+            'plan_purchased_at': datetime.datetime.now().isoformat(),
+            'payment_id': str(payment_id)
+        }).eq('id', user_id).execute()
+        
+        app.logger.info(f"Payment recorded for user {user_id}, plan: {plan_id}")
+        
+    except Exception as e:
+        app.logger.error(f"Error recording payment: {str(e)}")
+
+@app.route('/subscription', methods=['GET'])
+@token_required
+def get_subscription(current_user):
+    """Get the current user's subscription details"""
+    try:
+        # Get subscription from Supabase
+        user_data = supabase.table('users').select('subscription_tier,subscription_status,subscription_current_period_end').eq('id', current_user['id']).execute()
+        
+        if not user_data.data:
+            return jsonify({'error': 'User not found'}), 404
+            
+        user = user_data.data[0]
+        
+        # Default to free tier if no subscription
+        subscription_tier = user.get('subscription_tier', 'free')
+        subscription_status = user.get('subscription_status', 'inactive')
+        
+        # Get plan details
+        plan = PAYMENT_PLANS.get(subscription_tier, PAYMENT_PLANS['free'])
+        
+        return jsonify({
+            'success': True,
+            'subscription': {
+                'tier': subscription_tier,
+                'status': subscription_status,
+                'current_period_end': user.get('subscription_current_period_end'),
+                'plan': plan
+            }
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Error retrieving subscription: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+if __name__ == '__main__':
+    # For local development
+    port = int(os.environ.get("PORT", 5001))
+    app.run(host='0.0.0.0', port=port, debug=True)
+
 
