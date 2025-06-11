@@ -116,15 +116,20 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 app = Flask(__name__)
 
 # Set up CORS properly with specific origins
+app.config['CORS_HEADERS'] = 'Content-Type,Authorization'
+
 CORS(app, 
      resources={r"/*": {
          "origins": ["http://localhost:3000", 
                      "http://127.0.0.1:3000", 
+                     "http://localhost:5001",
+                     "http://127.0.0.1:5001",
                      "https://cardmatcher.net",
                      "https://www.cardmatcher.net"],
+         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+         "allow_headers": ["Content-Type", "Authorization"]
      }},
-     supports_credentials=True,
-     allow_headers=["Content-Type", "Authorization"])
+     supports_credentials=True)
 
 # Disable SSL requirement for local development
 app.config['TALISMAN_ENABLED'] = False
@@ -811,14 +816,33 @@ def google_auth():
             'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)  # 7-day expiration
         }, JWT_SECRET, algorithm="HS256")
         
-        return jsonify({
+        response = jsonify({
             "success": True,
             "token": token,
             "name": name
         })
+        
+        # Add CORS headers directly to this response
+        origin = request.headers.get('Origin')
+        if origin in ["https://cardmatcher.net", "https://www.cardmatcher.net", 
+                     "http://localhost:3000", "http://localhost:5001"]:
+            response.headers.add('Access-Control-Allow-Origin', origin)
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+        
+        return response
     except Exception as e:
         app.logger.error(f"Google auth error: {str(e)}")
         return jsonify({"success": False, "error": "Authentication failed"}), 401
+
+@app.route("/auth/google", methods=["OPTIONS"])
+def google_auth_options():
+    response = app.make_response("")
+    response.headers.add('Access-Control-Allow-Origin', request.headers.get('Origin', '*'))
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    response.headers.add('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
+    return response
 
 @app.route("/create_link_token", methods=["POST"])
 @token_required
@@ -1258,6 +1282,28 @@ def get_recommendation_by_id(current_user, recommendation_id):
             "success": False,
             "error": str(e)
         }), 500
+
+@app.after_request
+def apply_cors_headers(response):
+    origin = request.headers.get('Origin')
+    allowed_origins = [
+        "http://localhost:3000", 
+        "http://127.0.0.1:3000",
+        "http://localhost:5001", 
+        "http://127.0.0.1:5001",
+        "https://cardmatcher.net", 
+        "https://www.cardmatcher.net"
+    ]
+    
+    if origin in allowed_origins:
+        response.headers.add('Access-Control-Allow-Origin', origin)
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,DELETE')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        # This header is critical for Google Sign-In popup communication
+        response.headers.add('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
+        
+    return response
 
 # Main application entry point
 from hypercorn.config import Config
