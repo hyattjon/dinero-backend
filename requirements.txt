@@ -1,20 +1,16 @@
-numpy>=1.26.0
-pandas>=2.1.0
-flask>=3.0.0
-flask-cors>=6.0.0
-flask-talisman>=0.8.1
+flask==3.1.1
+flask-cors==6.0.1
+flask-talisman==1.1.0
+flask-limiter[redis]==3.12.0
 
-# Flask-Limiter with Redis support
-flask-limiter[redis]>=3.5.0
+# Database - specific compatible versions
+supabase==1.0.3
+gotrue==1.0.1
+httpx==0.23.3  # Version compatible with supabase 1.0.3
 
-# Redis client for Python
-redis>=5.0.0
-
-# For managing environment variables
-python-dotenv>=1.0.0
-
-# WSGI server for Heroku
-gunicorn>=21.2.0
+# Auth
+PyJWT==2.8.0
+google-auth==2.24.0
 
 # Plaid API integration
 plaid-python>=16.0.0
@@ -27,22 +23,16 @@ urllib3<2.0.0
 pyOpenSSL>=23.0.0
 
 # Async support
-httpx>=0.25.0
 asgiref>=3.7.2
 aiohttp>=3.9.1
 
-# ASGI server (optional if you're running async; remove if not needed)
+# ASGI server
 hypercorn>=0.16.0
 
-# Dev/test tools
-pytest>=7.4.0
-black>=23.7.0
-flake8>=6.1.0
-isort>=5.12.0
-mypy>=1.5.1
+# Utilities
+numpy>=1.26.0
+pandas>=2.1.0
+python-dotenv>=1.0.0
 
-
-PyJWT==2.8.0
-google-auth==2.24.0
-
-supabase==2.3.2
+# Server
+gunicorn>=21.2.0
