@@ -1259,18 +1259,6 @@ def get_recommendation_by_id(current_user, recommendation_id):
             "error": str(e)
         }), 500
 
-@app.after_request
-def add_cors_headers(response):
-    """Add necessary CORS headers to all responses"""
-    # Allow popups for Google authentication
-    response.headers['Cross-Origin-Opener-Policy'] = 'same-origin-allow-popups'
-    
-    # Add other security headers as needed
-    response.headers['X-Content-Type-Options'] = 'nosniff'
-    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
-    
-    return response
-
 # Main application entry point
 from hypercorn.config import Config
 from hypercorn.asyncio import serve
