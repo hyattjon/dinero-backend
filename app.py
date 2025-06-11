@@ -822,12 +822,11 @@ def google_auth():
             "name": name
         })
         
-        # Add CORS headers directly to this response
+        # Force CORS headers directly on this response
         origin = request.headers.get('Origin')
-        if origin in ["https://cardmatcher.net", "https://www.cardmatcher.net", 
-                     "http://localhost:3000", "http://localhost:5001"]:
-            response.headers.add('Access-Control-Allow-Origin', origin)
-            response.headers.add('Access-Control-Allow-Credentials', 'true')
+        response.headers['Access-Control-Allow-Origin'] = origin
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
+        response.headers['Cross-Origin-Opener-Policy'] = 'same-origin-allow-popups'
         
         return response
     except Exception as e:
@@ -1282,6 +1281,16 @@ def get_recommendation_by_id(current_user, recommendation_id):
             "success": False,
             "error": str(e)
         }), 500
+
+@app.before_request
+def log_request_info():
+    app.logger.info(f"Request path: {request.path}, method: {request.method}")
+    app.logger.info(f"Request headers: {dict(request.headers)}")
+
+@app.after_request
+def log_response_info(response):
+    app.logger.info(f"Response headers: {dict(response.headers)}")
+    return response
 
 @app.after_request
 def apply_cors_headers(response):
