@@ -8,6 +8,7 @@ import plaid
 from plaid.api import plaid_api
 from dotenv import load_dotenv
 from flask_talisman import Talisman
+from flask_wtf.csrf import CSRFProtect
 import os
 import pandas as pd
 import requests
@@ -28,6 +29,12 @@ from functools import wraps
 from supabase import create_client, Client
 import uuid
 import stripe
+from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, get_jwt_identity, jwt_required
+import structlog
+import traceback
+import sys
+from marshmallow import Schema, fields, validate, ValidationError
+from html import escape
 
 # This works now again
 # Environment variables and configuration
@@ -733,12 +740,17 @@ def register():
         data = request.get_json()
         app.logger.info(f"Registration attempt: {data.get('email') if data else 'No data'}")
         
-        name = data.get('name')
-        email = data.get('email')
-        password = data.get('password')
+        # Validate input with schema
+        try:
+            schema = RegistrationSchema()
+            validated_data = schema.load(data)
+        except ValidationError as err:
+            return jsonify({"success": False, "error": "Validation error", "details": err.messages}), 400
         
-        if not name or not email or not password:
-            return jsonify({"success": False, "error": "Missing required fields"}), 400
+        # Sanitize inputs
+        name = sanitize_input(validated_data.get('name'))
+        email = validated_data.get('email')  # Email already validated by schema
+        password = validated_data.get('password')
         
         # Check if user exists
         user_query = supabase.table('users').select('*').eq('email', email).execute()
@@ -797,19 +809,24 @@ def register():
         
     except Exception as e:
         app.logger.error(f"Registration error: {str(e)}", exc_info=True)
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "error": "Registration failed"}), 500
 
 @app.route("/auth/login", methods=["POST"])
-@limiter.exempt
+@limiter.limit("5 per minute")  # Specific rate limit for login attempts
 def login():
     try:
         # Get login credentials
         data = request.get_json()
-        email = data.get('email')
-        password = data.get('password')
         
-        if not email or not password:
-            return jsonify({"success": False, "error": "Missing email or password"}), 400
+        # Validate input
+        try:
+            schema = LoginSchema()
+            validated_data = schema.load(data)
+        except ValidationError as err:
+            return jsonify({"success": False, "error": "Validation error", "details": err.messages}), 400
+        
+        email = validated_data.get('email')
+        password = validated_data.get('password')
         
         # Authenticate with Supabase
         login_response = supabase.auth.sign_in_with_password({
@@ -817,7 +834,6 @@ def login():
             "password": password
         })
         
-        # Don't use the Supabase token directly, create our own
         user_id = login_response.user.id
         
         # Update last login time
@@ -829,21 +845,34 @@ def login():
         user_query = supabase.table('users').select('name').eq('id', user_id).execute()
         name = user_query.data[0]['name'] if user_query.data else email.split('@')[0]
         
-        # Generate our own JWT token with our secret
-        token = jwt.encode({
+        # Create both access and refresh tokens
+        access_token = create_access_token(identity={
             'id': user_id,
-            'email': email,
-            'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
-        }, JWT_SECRET, algorithm="HS256")
+            'email': email
+        })
+        refresh_token = create_refresh_token(identity={
+            'id': user_id,
+            'email': email
+        })
         
         return jsonify({
             "success": True,
-            "token": token,
+            "token": access_token,
+            "refresh_token": refresh_token,
             "name": name
         })
     except Exception as e:
         app.logger.error(f"Login error: {str(e)}")
         return jsonify({"success": False, "error": "Login failed"}), 401
+
+# Add a token refresh endpoint
+@app.route('/refresh', methods=['POST'])
+@jwt_required(refresh=True)
+def refresh():
+    """Refresh access token using refresh token"""
+    current_user = get_jwt_identity()
+    access_token = create_access_token(identity=current_user)
+    return jsonify(access_token=access_token)
 
 @app.route("/auth/google", methods=["POST"])
 @limiter.exempt
@@ -1397,7 +1426,7 @@ def get_plans():
 @app.route('/create-checkout-session', methods=['POST'])
 @token_required
 def create_checkout_session(current_user):
-    """Create a Stripe checkout session for one-time payment"""
+    """Create a Stripe checkout session with idempotency key for safety"""
     try:
         data = request.get_json()
         plan_id = data.get('plan_id')
@@ -1410,7 +1439,10 @@ def create_checkout_session(current_user):
         if not STRIPE_SECRET_KEY:
             return jsonify({'error': 'Stripe is not configured'}), 500
 
-        # Get customer ID or create one
+        # Generate a unique idempotency key based on user and plan
+        idempotency_key = f"{current_user['id']}_{plan_id}_{datetime.datetime.now().strftime('%Y%m%d')}"
+        
+        # Get customer ID or create one with idempotency
         user_data = supabase.table('users').select('stripe_customer_id').eq('id', current_user['id']).execute()
         
         customer_id = None
@@ -1425,24 +1457,22 @@ def create_checkout_session(current_user):
                 customer_id = stored_customer_id
                 customer_exists_in_stripe = True
             except stripe.error.InvalidRequestError as e:
-                # Customer doesn't exist in Stripe, we'll create a new one
                 app.logger.warning(f"Customer {stored_customer_id} not found in Stripe: {str(e)}")
         
-        # Create a new customer if needed
+        # Create a new customer if needed (with idempotency)
         if not customer_exists_in_stripe:
-            # Create a new customer
             customer = stripe.Customer.create(
                 email=current_user.get('email'),
                 name=current_user.get('name', 'Card Matcher User'),
-                metadata={'user_id': current_user['id']}
+                metadata={'user_id': current_user['id']},
+                idempotency_key=f"customer_{current_user['id']}"  # Prevent duplicate customer creation
             )
             customer_id = customer.id
             
-            # Update user with new Stripe customer ID
             supabase.table('users').update({'stripe_customer_id': customer_id}).eq('id', current_user['id']).execute()
             app.logger.info(f"Created new Stripe customer {customer_id} for user {current_user['id']}")
 
-        # Create checkout session for one-time payment
+        # Create checkout session with idempotency key
         checkout_session = stripe.checkout.Session.create(
             customer=customer_id,
             payment_method_types=['card'],
@@ -1450,20 +1480,21 @@ def create_checkout_session(current_user):
                 'price': plan['stripe_price_id'],
                 'quantity': 1,
             }],
-            mode='payment',  # Changed from 'subscription' to 'payment'
-            success_url=request.headers.get('Origin', '') + '/dashboard.html?payment=success&plan=' + plan_id,
+            mode='payment',
+            success_url=request.headers.get('Origin', '') + '/payment-success.html?payment=success&plan=' + plan_id,
             cancel_url=request.headers.get('Origin', '') + '/pricing.html?payment=canceled',
             metadata={
                 'user_id': current_user['id'],
                 'plan_id': plan_id
-            }
+            },
+            idempotency_key=idempotency_key  # Prevents accidental duplicate charges
         )
         
         return jsonify({'success': True, 'session_id': checkout_session.id})
         
     except Exception as e:
         app.logger.error(f"Error creating checkout session: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': "Payment processing error"}), 500  # Sanitized error
 
 @app.route('/customer-portal', methods=['POST'])
 @token_required
@@ -1498,10 +1529,18 @@ def stripe_webhook():
     
     try:
         if not STRIPE_WEBHOOK_SECRET:
-            raise ValueError("Webhook secret not configured")
+            structured_logger.error("Webhook secret not configured")
+            return jsonify({'error': "Server configuration error"}), 500
             
         event = stripe.Webhook.construct_event(
             payload, sig_header, STRIPE_WEBHOOK_SECRET
+        )
+        
+        # Log the webhook type
+        structured_logger.info(
+            "Received webhook", 
+            event_type=event['type'],
+            event_id=event['id']
         )
         
         # Handle the event
@@ -1514,10 +1553,22 @@ def stripe_webhook():
                 
         return jsonify({'status': 'success'})
         
+    except stripe.error.SignatureVerificationError as e:
+        # This is a specific error we want to log differently
+        structured_logger.error(
+            "Webhook signature verification failed",
+            error=str(e)
+        )
+        return jsonify({'error': "Invalid signature"}), 401
+        
     except Exception as e:
-        app.logger.error(f"Webhook error: {str(e)}")
-        return jsonify({'error': str(e)}), 400
-
+        structured_logger.error(
+            "Webhook processing error",
+            error=str(e),
+            error_type=type(e).__name__,
+            traceback=traceback.format_exc()
+        )
+        return jsonify({'error': "Webhook processing failed"}), 400
 def record_payment(session):
     """Record successful one-time payment"""
     # Get data from session
@@ -1592,9 +1643,127 @@ def get_subscription(current_user):
         app.logger.error(f"Error retrieving subscription: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-if __name__ == '__main__':
-    # For local development
-    port = int(os.environ.get("PORT", 5001))
-    app.run(host='0.0.0.0', port=port, debug=True)
+# Add health check endpoints
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Basic health check endpoint"""
+    return jsonify({
+        'status': 'healthy',
+        'timestamp': datetime.datetime.now().isoformat()
+    })
+
+@app.route('/health/detailed', methods=['GET'])
+@limiter.exempt
+def detailed_health_check():
+    """Detailed health check that tests all components"""
+    health_data = {
+        'status': 'healthy',
+        'timestamp': datetime.datetime.now().isoformat(),
+        'components': {
+            'app': 'healthy',
+            'database': 'unknown',
+            'stripe': 'unknown'
+        },
+        'checks': []
+    }
+    
+    # Check database connection
+    try:
+        start_time = datetime.datetime.now()
+        db_response = supabase.table('_health').select('*').limit(1).execute()
+        end_time = datetime.datetime.now()
+        response_time = (end_time - start_time).total_seconds()
+        
+        health_data['components']['database'] = 'healthy'
+        health_data['checks'].append({
+            'component': 'database',
+            'status': 'healthy',
+            'response_time_seconds': response_time
+        })
+    except Exception as e:
+        health_data['status'] = 'degraded'
+        health_data['components']['database'] = 'unhealthy'
+        health_data['checks'].append({
+            'component': 'database',
+            'status': 'unhealthy',
+            'error': str(e)
+        })
+    
+    # Check Stripe connection if configured
+    if STRIPE_SECRET_KEY:
+        try:
+            start_time = datetime.datetime.now()
+            stripe.Account.retrieve()
+            end_time = datetime.datetime.now()
+            response_time = (end_time - start_time).total_seconds()
+            
+            health_data['components']['stripe'] = 'healthy'
+            health_data['checks'].append({
+                'component': 'stripe',
+                'status': 'healthy',
+                'response_time_seconds': response_time
+            })
+        except Exception as e:
+            health_data['status'] = 'degraded'
+            health_data['components']['stripe'] = 'unhealthy'
+            health_data['checks'].append({
+                'component': 'stripe',
+                'status': 'unhealthy',
+                'error': str(e)
+            })
+    
+    # Check if any component is unhealthy
+    if any(value == 'unhealthy' for value in health_data['components'].values()):
+        health_data['status'] = 'degraded'
+        return jsonify(health_data), 503  # Service Unavailable
+    
+    return jsonify(health_data)
+
+# Add suspicious activity monitoring
+@app.before_request
+def monitor_suspicious_activity():
+    """Monitor for suspicious activity in requests"""
+    # Check for suspicious patterns in user-agent, referrer, or IP
+    user_agent = request.headers.get('User-Agent', '')
+    referrer = request.headers.get('Referer', '')
+    client_ip = request.remote_addr
+    
+    # Define suspicious patterns
+    suspicious_ua_patterns = ['sqlmap', 'nikto', 'nmap', 'burpsuite', 'OWASP ZAP']
+    suspicious_paths = ['/wp-login', '/wp-admin', '/admin', '/phpmyadmin']
+    
+    # Check for suspicious activity
+    is_suspicious = False
+    reason = None
+    
+    # Check user agent
+    for pattern in suspicious_ua_patterns:
+        if pattern.lower() in user_agent.lower():
+            is_suspicious = True
+            reason = f"Suspicious user agent: {user_agent}"
+            break
+    
+    # Check request path
+    if not is_suspicious and request.path:
+        for path in suspicious_paths:
+            if path in request.path:
+                is_suspicious = True
+                reason = f"Suspicious path requested: {request.path}"
+                break
+    
+    # Log suspicious activity
+    if is_suspicious:
+        structured_logger.warning(
+            "Suspicious activity detected",
+            reason=reason,
+            client_ip=client_ip,
+            user_agent=user_agent,
+            referrer=referrer,
+            path=request.path,
+            method=request.method
+        )
+        
+        # For highly suspicious activity, you might want to add the IP to a blocklist
+        # or return a 403 Forbidden response
 
 
