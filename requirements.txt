@@ -44,3 +44,5 @@ mypy>=1.5.1
 
 PyJWT==2.8.0
 google-auth==2.24.0
+
+supabase==1.0.3
