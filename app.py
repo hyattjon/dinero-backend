@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask import make_response
 import redis
 import plaid
 from plaid.api import plaid_api
@@ -641,6 +642,30 @@ def handle_options(path):
     response = app.make_default_options_response()
     return response
 
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        response = make_response()
+        origin = request.headers.get('Origin')
+        
+        allowed_origins = [
+            "http://localhost:3000", 
+            "http://127.0.0.1:3000",
+            "http://localhost:5001", 
+            "http://127.0.0.1:5001",
+            "https://cardmatcher.net", 
+            "https://www.cardmatcher.net"
+        ]
+        
+        if origin in allowed_origins:
+            response.headers.add('Access-Control-Allow-Origin', origin)
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,DELETE')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            response.headers.add('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
+        
+        return response, 200
+
 @app.route("/auth/register", methods=["POST"])
 @limiter.exempt
 def register():
@@ -824,9 +849,10 @@ def google_auth():
         
         # Force CORS headers directly on this response
         origin = request.headers.get('Origin')
-        response.headers['Access-Control-Allow-Origin'] = origin
-        response.headers['Access-Control-Allow-Credentials'] = 'true'
-        response.headers['Cross-Origin-Opener-Policy'] = 'same-origin-allow-popups'
+        if origin in ["https://cardmatcher.net", "https://www.cardmatcher.net"]:
+            response.headers['Access-Control-Allow-Origin'] = origin
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
+            response.headers['Cross-Origin-Opener-Policy'] = 'same-origin-allow-popups'
         
         return response
     except Exception as e:
@@ -1293,25 +1319,10 @@ def log_response_info(response):
     return response
 
 @app.after_request
-def apply_cors_headers(response):
+def cors_debugging(response):
     origin = request.headers.get('Origin')
-    allowed_origins = [
-        "http://localhost:3000", 
-        "http://127.0.0.1:3000",
-        "http://localhost:5001", 
-        "http://127.0.0.1:5001",
-        "https://cardmatcher.net", 
-        "https://www.cardmatcher.net"
-    ]
-    
-    if origin in allowed_origins:
-        response.headers.add('Access-Control-Allow-Origin', origin)
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,DELETE')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        # This header is critical for Google Sign-In popup communication
-        response.headers.add('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
-        
+    app.logger.info(f"Request from origin: {origin}")
+    app.logger.info(f"CORS headers being sent: {dict(response.headers)}")
     return response
 
 # Main application entry point
