@@ -178,16 +178,20 @@ app = Flask(__name__)
 # Set up CORS properly with specific origins
 app.config['CORS_HEADERS'] = 'Content-Type,Authorization'
 
+ALLOWED_ORIGINS = [
+    "http://localhost:3000", 
+    "http://127.0.0.1:3000",
+    "http://localhost:5001", 
+    "http://127.0.0.1:5001",
+    "https://cardmatcher.net", 
+    "https://www.cardmatcher.net",
+    "https://dinero-frontend.herokuapp.com",
+    "https://dinero-backend-deeac4fe8d4e.herokuapp.com"
+]
+
 CORS(app, 
      resources={r"/*": {
-         "origins": ["http://localhost:3000", 
-                     "http://127.0.0.1:3000", 
-                     "http://localhost:5001",
-                     "http://127.0.0.1:5001",
-                     "https://cardmatcher.net",
-                     "https://www.cardmatcher.net",
-                     "https://dinero-frontend.herokuapp.com",
-                     "https://dinero-backend-deeac4fe8d4e.herokuapp.com"],
+         "origins": ALLOWED_ORIGINS,
          "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
          "allow_headers": ["Content-Type", "Authorization"]
      }},
@@ -774,16 +778,7 @@ def handle_preflight():
         response = make_response()
         origin = request.headers.get('Origin')
         
-        allowed_origins = [
-            "http://localhost:3000", 
-            "http://127.0.0.1:3000",
-            "http://localhost:5001", 
-            "http://127.0.0.1:5001",
-            "https://cardmatcher.net", 
-            "https://www.cardmatcher.net"
-        ]
-        
-        if origin in allowed_origins:
+        if origin in ALLOWED_ORIGINS:  # Use the global variable
             response.headers.add('Access-Control-Allow-Origin', origin)
             response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
             response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,DELETE')
@@ -1051,7 +1046,7 @@ def google_auth_options():
     origin = request.headers.get('Origin')
     
     # Use the same allowed_origins list for consistency
-    if origin in allowed_origins:
+    if origin in ALLOWED_ORIGINS:
         response.headers.add('Access-Control-Allow-Origin', origin)
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
         response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
@@ -2026,7 +2021,7 @@ def rotate_api_keys():
             return
     
     app.logger.warning("API keys need rotation - please manually rotate them in Supabase and update environment variables")
-    # Send notification to administrators
+    
 
 
 # Add this code at the very end of your file
@@ -2050,18 +2045,8 @@ def handle_500_error(e):
     
     # Add CORS headers directly
     origin = request.headers.get('Origin')
-    allowed_origins = [
-        "http://localhost:3000", 
-        "http://127.0.0.1:3000",
-        "http://localhost:5001", 
-        "http://127.0.0.1:5001",
-        "https://cardmatcher.net", 
-        "https://www.cardmatcher.net",
-        "https://dinero-frontend.herokuapp.com",
-        "https://dinero-backend-deeac4fe8d4e.herokuapp.com"
-    ]
     
-    if origin in allowed_origins:
+    if origin in ALLOWED_ORIGINS:  # Use the global variable
         response.headers.add('Access-Control-Allow-Origin', origin)
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
         response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,DELETE')
