@@ -39,3 +39,16 @@ gunicorn>=21.2.0
 
 # Payment processing
 stripe==7.9.0
+
+# Auth and security
+flask-wtf>=1.2.1
+pyotp>=2.9.0
+cryptography>=41.0.0
+flask-jwt-extended>=4.5.2
+
+
+# Auth and security
+flask-wtf>=1.2.1
+pyotp>=2.9.0
+cryptography>=41.0.0
+flask-jwt-extended>=4.5.2
