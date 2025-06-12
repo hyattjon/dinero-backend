@@ -185,7 +185,9 @@ CORS(app,
                      "http://localhost:5001",
                      "http://127.0.0.1:5001",
                      "https://cardmatcher.net",
-                     "https://www.cardmatcher.net"],
+                     "https://www.cardmatcher.net",
+                     "https://dinero-frontend.herokuapp.com",
+                     "https://dinero-backend-deeac4fe8d4e.herokuapp.com"],
          "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
          "allow_headers": ["Content-Type", "Authorization"]
      }},
@@ -1045,13 +1047,18 @@ def google_auth():
 
 @app.route("/auth/google", methods=["OPTIONS"])
 def google_auth_options():
-    response = app.make_response("")
-    response.headers.add('Access-Control-Allow-Origin', request.headers.get('Origin', '*'))
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
-    response.headers.add('Access-Control-Allow-Credentials', 'true')
-    # Change this to support Google's auth popup
-    response.headers.add('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
+    response = make_response("")
+    origin = request.headers.get('Origin')
+    
+    # Use the same allowed_origins list for consistency
+    if origin in allowed_origins:
+        response.headers.add('Access-Control-Allow-Origin', origin)
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        # Change this to support Google's auth popup
+        response.headers.add('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
+    
     return response
 
 @app.route("/create_link_token", methods=["POST"])
@@ -1908,6 +1915,15 @@ def add_security_headers(response):
     response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
     response.headers['Permissions-Policy'] = 'camera=(), microphone=(), geolocation=()'
+    
+    # Don't override COOP if it's already set for Google Auth
+    if 'Cross-Origin-Opener-Policy' not in response.headers:
+        # Check if this is an auth-related endpoint
+        if '/auth/' in request.path:
+            response.headers['Cross-Origin-Opener-Policy'] = 'same-origin-allow-popups'
+        else:
+            response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
+    
     return response
 
 @app.errorhandler(Exception)
@@ -2004,8 +2020,7 @@ def rotate_api_keys():
     last_rotation = os.environ.get('LAST_API_KEY_ROTATION')
     if last_rotation:
         last_date = datetime.datetime.fromisoformat(last_rotation)
-        days_since_rotation = (datetime.datetime.now() - last_date).days
-        
+        days_since_rotation = (datetime.datetime.now() - last_date).days        
         if days_since_rotation < 90:
             app.logger.info(f"API keys rotated {days_since_rotation} days ago, no rotation needed")
             return
@@ -2016,7 +2031,7 @@ def rotate_api_keys():
 
 # Add this code at the very end of your file
 if __name__ == "__main__":
-    # Get port from environment variable or use 5001 as default
+    # Get port from environment variable or use  5001 as default
     port = int(os.environ.get("PORT", 5001))
     
     # Start the Flask app
@@ -2024,3 +2039,33 @@ if __name__ == "__main__":
     
     # Log application shutdown
     app.logger.info("Application shutdown")
+
+@app.errorhandler(500)
+def handle_500_error(e):
+    """Handle 500 errors with proper CORS headers"""
+    response = jsonify({
+        "success": False,
+        "error": "Internal server error"
+    })
+    
+    # Add CORS headers directly
+    origin = request.headers.get('Origin')
+    allowed_origins = [
+        "http://localhost:3000", 
+        "http://127.0.0.1:3000",
+        "http://localhost:5001", 
+        "http://127.0.0.1:5001",
+        "https://cardmatcher.net", 
+        "https://www.cardmatcher.net",
+        "https://dinero-frontend.herokuapp.com",
+        "https://dinero-backend-deeac4fe8d4e.herokuapp.com"
+    ]
+    
+    if origin in allowed_origins:
+        response.headers.add('Access-Control-Allow-Origin', origin)
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,DELETE')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        response.headers.add('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
+    
+    return response, 500
