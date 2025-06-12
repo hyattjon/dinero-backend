@@ -1,54 +1,47 @@
+# Core Flask
 flask==3.1.1
 flask-cors==6.0.1
 flask-talisman==1.1.0
 flask-limiter[redis]==3.12.0
+flask-wtf>=1.2.1
+flask-jwt-extended>=4.5.2
+werkzeug>=3.0.0
 
-# Database - specific compatible versions
+# Database and API
 supabase==1.0.3
 gotrue==1.0.1
 httpx==0.23.3  # Version compatible with supabase 1.0.3
+plaid-python>=16.0.0
 
-# Auth
+# Authentication
 PyJWT==2.8.0
 google-auth==2.24.0
-
-# Plaid API integration
-plaid-python>=16.0.0
+pyotp>=2.9.0
+cryptography>=41.0.0
 
 # HTTP utilities
 requests>=2.31.0
 urllib3<2.0.0
-
-# Secure HTTPS support
 pyOpenSSL>=23.0.0
 
 # Async support
 asgiref>=3.7.2
 aiohttp>=3.9.1
 
-# ASGI server
+# Servers
 hypercorn>=0.16.0
+gunicorn>=21.2.0
 
-# Utilities
+# Data processing
 numpy>=1.26.0
 pandas>=2.1.0
-python-dotenv>=1.0.0
+marshmallow>=3.20.1
 
-# Server
-gunicorn>=21.2.0
+# Utilities
+python-dotenv>=1.0.0
+structlog>=23.1.0
 
 # Payment processing
 stripe==7.9.0
 
-# Auth and security
-flask-wtf>=1.2.1
-pyotp>=2.9.0
-cryptography>=41.0.0
-flask-jwt-extended>=4.5.2
-
-
-# Auth and security
-flask-wtf>=1.2.1
-pyotp>=2.9.0
-cryptography>=41.0.0
-flask-jwt-extended>=4.5.2
+# Redis is already included via flask-limiter[redis]
