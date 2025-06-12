@@ -1,180 +1,56 @@
-2025-06-06 17:20:38,598 ERROR: Exception on /fetch_all_card_rewards [GET] [in /Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py:875]
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 920, in full_dispatch_request
-    return self.finalize_request(rv)
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 939, in finalize_request
-    response = self.make_response(rv)
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 1249, in make_response
-    raise TypeError(
-TypeError: The view function did not return a valid response. The return type must be a string, dict, list, tuple with headers or status, Response instance, or WSGI callable, but it was a coroutine.
-2025-06-07 08:35:55,287 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:337]
-2025-06-07 08:35:55,307 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1045]
-2025-06-07 08:36:58,338 INFO: Starting to fetch rewards data for 20 cards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:888]
-2025-06-07 08:36:58,339 INFO: Fetching card details for amex-gold [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:828]
-2025-06-07 08:36:58,690 INFO: Response status for amex-gold: 404 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:831]
-2025-06-07 08:36:58,690 ERROR: Error fetching amex-gold: 404 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:837]
-2025-06-07 08:36:58,691 ERROR: Response content: <!DOCTYPE html>
-<html lang=en>
-<head>
-<meta charset=utf-8 />
-<meta name=viewport content="width=device-width, initial-scale=1.0" />
-<meta http-equiv=X-UA-Compatible content="IE=edge" />
-<title>Azure Static Web Apps - 404: Not found</title>
-<link rel="shortcut icon" href=https://appservice.azureedge.net/images/static-apps/v3/favicon.svg type=image/x-icon />
-<link rel=stylesheet href=https://ajax.aspnetcdn.com/ajax/bootstrap/5.2.3/css/bootstrap.min.css crossorigin=anonymous />
-<link rel=stylesheet type=text/css href="https://appservice.azureedge.net/css/static-apps/v3/main.css"/>
-<script src=https://appservice.azureedge.net/scripts/static-apps/v3/loc.min.js crossorigin=anonymous></script>
-<script type=text/javascript>window.onload=function(){try{loc("404notFound")}catch(a){}};</script>
-</head>
-<body>
-<nav class="navbar navbar-light ps-5 ms-5">
-<div class=navbar-brand>
-<div class="container pl-4 ml-5">
-<img src=https://appservice.azureedge.net/images/static-apps/v3/microsoft_azure_logo.svg width=270 height=108 alt />
-</div>
-</div>
-</nav>
-<div class="container-fluid container-height mr-2">
-<div class="pt-10 pb-10 mt-10 mb-10 d-xxs-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block" style=height:20px;width:100%;clear:both></div>
-<div class=row>
-<div class="row col-xs-12 col-sm-12 d-block d-lg-none d-xl-none d-md-block d-sm-block d-xs-block">
-<div class=text-center>
-<img src=https://appservice.azureedge.net/images/static-apps/v3/staticapps.svg />
-</div>
-</div>
-<div class="extra-pl-small-scr offset-xl-1 offset-lg-1 offset-md-2 offset-sm-2 offset-xs-4 col-xl-5 col-lg-5 col-md-10 col-sm-11 col-xs-11 div-vertical-center">
-<div class=container-fluid>
-<div class=row>
-<h2 id=titleText>404: Not Found</h2>
-</div>
-<br />
-<div class=row>
-<div id=subText class=sub-text>We couldnât find that page, please check the URL and try again.</div>
-</div>
-</div>
-</div>
-<div class="col-xl-5 col-lg-5 col-md-12 d-none d-lg-block">
-<div class=text-center>
-<img src=https://appservice.azureedge.net/images/static-apps/v3/staticapps.svg />
-</div>
-</div>
-<div class="col-xl-1 col-lg-1 col-md-1"></div>
-</div>
-</div>
-<script src=https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.7.1.min.js crossorigin=anonymous></script>
-<script src=https://ajax.aspnetcdn.com/ajax/bootstrap/5.2.3/bootstrap.min.js crossorigin=anonymous></script>
-</body>
-</html> [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:838]
-2025-06-07 08:36:58,692 INFO: Fetching card details for chase-sapphire-preferred [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:828]
-2025-06-07 08:36:58,920 INFO: Response status for chase-sapphire-preferred: 404 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:831]
-2025-06-07 08:36:58,921 ERROR: Error fetching chase-sapphire-preferred: 404 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:837]
-2025-06-07 08:36:58,921 ERROR: Response content: <!DOCTYPE html>
-<html lang=en>
-<head>
-<meta charset=utf-8 />
-<meta name=viewport content="width=device-width, initial-scale=1.0" />
-<meta http-equiv=X-UA-Compatible content="IE=edge" />
-<title>Azure Static Web Apps - 404: Not found</title>
-<link rel="shortcut icon" href=https://appservice.azureedge.net/images/static-apps/v3/favicon.svg type=image/x-icon />
-<link rel=stylesheet href=https://ajax.aspnetcdn.com/ajax/bootstrap/5.2.3/css/bootstrap.min.css crossorigin=anonymous />
-<link rel=stylesheet type=text/css href="https://appservice.azureedge.net/css/static-apps/v3/main.css"/>
-<script src=https://appservice.azureedge.net/scripts/static-apps/v3/loc.min.js crossorigin=anonymous></script>
-<script type=text/javascript>window.onload=function(){try{loc("404notFound")}catch(a){}};</script>
-</head>
-<body>
-<nav class="navbar navbar-light ps-5 ms-5">
-<div class=navbar-brand>
-<div class="container pl-4 ml-5">
-<img src=https://appservice.azureedge.net/images/static-apps/v3/microsoft_azure_logo.svg width=270 height=108 alt />
-</div>
-</div>
-</nav>
-<div class="container-fluid container-height mr-2">
-<div class="pt-10 pb-10 mt-10 mb-10 d-xxs-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block" style=height:20px;width:100%;clear:both></div>
-<div class=row>
-<div class="row col-xs-12 col-sm-12 d-block d-lg-none d-xl-none d-md-block d-sm-block d-xs-block">
-<div class=text-center>
-<img src=https://appservice.azureedge.net/images/static-apps/v3/staticapps.svg />
-</div>
-</div>
-<div class="extra-pl-small-scr offset-xl-1 offset-lg-1 offset-md-2 offset-sm-2 offset-xs-4 col-xl-5 col-lg-5 col-md-10 col-sm-11 col-xs-11 div-vertical-center">
-<div class=container-fluid>
-<div class=row>
-<h2 id=titleText>404: Not Found</h2>
-</div>
-<br />
-<div class=row>
-<div id=subText class=sub-text>We couldnât find that page, please check the URL and try again.</div>
-</div>
-</div>
-</div>
-<div class="col-xl-5 col-lg-5 col-md-12 d-none d-lg-block">
-<div class=text-center>
-<img src=https://appservice.azureedge.net/images/static-apps/v3/staticapps.svg />
-</div>
-</div>
-<div class="col-xl-1 col-lg-1 col-md-1"></div>
-</div>
-</div>
-<script src=https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.7.1.min.js crossorigin=anonymous></script>
-<script src=https://ajax.aspnetcdn.com/ajax/bootstrap/5.2.3/bootstrap.min.js crossorigin=anonymous></script>
-</body>
-</html> [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:838]
-2025-06-07 08:36:58,922 INFO: Fetching card details for capital-one-venture-rewards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:828]
-2025-06-07 08:36:59,151 INFO: Response status for capital-one-venture-rewards: 404 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:831]
-2025-06-07 08:36:59,151 ERROR: Error fetching capital-one-venture-rewards: 404 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:837]
-2025-06-07 08:36:59,151 ERROR: Response content: <!DOCTYPE html>
-<html lang=en>
-<head>
-<meta charset=utf-8 />
-<meta name=viewport content="width=device-width, initial-scale=1.0" />
-<meta http-equiv=X-UA-Compatible content="IE=edge" />
-<title>Azure Static Web Apps - 404: Not found</title>
-<link rel="shortcut icon" href=https://appservice.azureedge.net/images/static-apps/v3/favicon.svg type=image/x-icon />
-<link rel=stylesheet href=https://ajax.aspnetcdn.com/ajax/bootstrap/5.2.3/css/bootstrap.min.css crossorigin=anonymous />
-<link rel=stylesheet type=text/css href="https://appservice.azureedge.net/css/static-apps/v3/main.css"/>
-<script src=https://appservice.azureedge.net/scripts/static-apps/v3/loc.min.js crossorigin=anonymous></script>
-<script type=text/javascript>window.onload=function(){try{loc("404notFound")}catch(a){}};</script>
-</head>
-<body>
-<nav class="navbar navbar-light ps-5 ms-5">
-<div class=navbar-brand>
-<div class="container pl-4 ml-5">
-<img src=https://appservice.azureedge.net/images/static-apps/v3/microsoft_azure_logo.svg width=270 height=108 alt />
-</div>
-</div>
-</nav>
-<div class="container-fluid container-height mr-2">
-<div class="pt-10 pb-10 mt-10 mb-10 d-xxs-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block" style=height:20px;width:100%;clear:both></div>
-<div class=row>
-<div class="row col-xs-12 col-sm-12 d-block d-lg-none d-xl-none d-md-block d-sm-block d-xs-block">
-<div class=text-center>
-<img src=https://appservice.azureedge.net/images/static-apps/v3/staticapps.svg />
-</div>
-</div>
-<div class="extra-pl-small-scr offset-xl-1 offset-lg-1 offset-md-2 offset-sm-2 offset-xs-4 col-xl-5 col-lg-5 col-md-10 col-sm-11 col-xs-11 div-vertical-center">
-<div class=container-fluid>
-<div class=row>
-<h2 id=titleText>404: Not Found</h2>
-</div>
-<br />
-<div class=row>
-<div id=subText class=sub-text>We couldnât find that page, please check the URL and try again.</div>
-</div>
-</div>
-</div>
-<div class="col-xl-5 col-lg-5 col-md-12 d-none d-lg-block">
-<div class=text-center>
-<img src=https://appservice.azureedge.net/images/static-apps/v3/staticapps.svg />
-</div>
-</div>
-<div class="col-xl-1 col-lg-1 col-md-1"></div>
-</div>
-</div>
-<script src=https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.7.1.min.js crossorigin=anonymous></script>
-<script src=https://ajax.aspnetcdn.com/ajax/bootstrap/5.2.3/bootstrap.min.js crossorigin=anonymous></script>
-</body>
-</html> [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:838]
-2025-06-07 08:36:59,152 INFO: Fetching card details for amex-platinum [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:828]
+2025-06-12 11:01:47,122 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1YzI0YzBkLTk2NGUtNDA3Mi04NDQ5LTFhMDE2NDZiZWYwMiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTAzNDcxMDZ9.kX-vf1rQXZnHgQYw6C0dmteBZAOPkdU1PuLG40fA0Bo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:687]
+2025-06-12 11:01:47,122 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:698]
+2025-06-12 11:01:47,126 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:698]
+2025-06-12 11:01:47,126 INFO: Decoded token: {'id': '15c24c0d-964e-4072-8449-1a01646bef02', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750347106} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:703]
+2025-06-12 11:01:47,126 INFO: Decoded token: {'id': '15c24c0d-964e-4072-8449-1a01646bef02', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750347106} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:703]
+2025-06-12 11:18:34,274 INFO: Application shutdown [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:2001]
+2025-06-12 11:18:36,387 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:250]
+2025-06-12 11:18:36,390 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:757]
+2025-06-12 11:18:37,162 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:250]
+2025-06-12 11:18:37,165 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:757]
+2025-06-12 11:18:42,159 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1YzI0YzBkLTk2NGUtNDA3Mi04NDQ5LTFhMDE2NDZiZWYwMiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTAzNDcxMDZ9.kX-vf1rQXZnHgQYw6C0dmteBZAOPkdU1PuLG40fA0Bo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:687]
+2025-06-12 11:18:42,160 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:698]
+2025-06-12 11:18:42,161 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1YzI0YzBkLTk2NGUtNDA3Mi04NDQ5LTFhMDE2NDZiZWYwMiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTAzNDcxMDZ9.kX-vf1rQXZnHgQYw6C0dmteBZAOPkdU1PuLG40fA0Bo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:687]
+2025-06-12 11:18:42,161 INFO: Decoded token: {'id': '15c24c0d-964e-4072-8449-1a01646bef02', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750347106} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:703]
+2025-06-12 11:18:42,161 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:698]
+2025-06-12 11:18:42,162 INFO: Decoded token: {'id': '15c24c0d-964e-4072-8449-1a01646bef02', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750347106} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:703]
+2025-06-12 11:18:45,080 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1YzI0YzBkLTk2NGUtNDA3Mi04NDQ5LTFhMDE2NDZiZWYwMiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTAzNDcxMDZ9.kX-vf1rQXZnHgQYw6C0dmteBZAOPkdU1PuLG40fA0Bo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:687]
+2025-06-12 11:18:45,080 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:698]
+2025-06-12 11:18:45,080 INFO: Decoded token: {'id': '15c24c0d-964e-4072-8449-1a01646bef02', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750347106} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:703]
+2025-06-12 11:18:45,081 INFO: Creating link token for user 15c24c0d-964e-4072-8449-1a01646bef02 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1061]
+2025-06-12 11:18:45,081 INFO: Plaid link token request: {'user': {'client_user_id': '15c24c0d-964e-4072-8449-1a01646bef02'}, 'client_name': 'Card Matcher', 'products': ['transactions'], 'language': 'en', 'country_codes': ['US']} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1081]
+2025-06-12 11:18:45,603 INFO: Successfully created link token [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1087]
+2025-06-12 11:19:17,620 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1YzI0YzBkLTk2NGUtNDA3Mi04NDQ5LTFhMDE2NDZiZWYwMiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTAzNDcxMDZ9.kX-vf1rQXZnHgQYw6C0dmteBZAOPkdU1PuLG40fA0Bo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:687]
+2025-06-12 11:19:17,620 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:698]
+2025-06-12 11:19:17,620 INFO: Decoded token: {'id': '15c24c0d-964e-4072-8449-1a01646bef02', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750347106} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:703]
+2025-06-12 11:19:18,780 INFO: Starting to fetch rewards data for 20 cards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1330]
+2025-06-12 11:19:18,781 INFO: Fetching card details for amex-gold from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/amex-gold [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:576]
+2025-06-12 11:19:19,558 INFO: Response status for amex-gold: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:579]
+2025-06-12 11:19:19,558 INFO: Successfully fetched data for amex-gold [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:582]
+2025-06-12 11:19:19,559 INFO: Fetching card details for chase-sapphire-preferred from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/chase-sapphire-preferred [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:576]
+2025-06-12 11:19:20,197 INFO: Response status for chase-sapphire-preferred: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:579]
+2025-06-12 11:19:20,197 INFO: Successfully fetched data for chase-sapphire-preferred [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:582]
+2025-06-12 11:19:20,198 ERROR: Error processing card chase-sapphire-preferred: 'list' object has no attribute 'get' [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1362]
+2025-06-12 11:19:20,198 INFO: Fetching card details for capital-one-venture-rewards from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/capital-one-venture-rewards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:576]
+2025-06-12 11:19:20,816 INFO: Response status for capital-one-venture-rewards: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:579]
+2025-06-12 11:19:20,817 INFO: Successfully fetched data for capital-one-venture-rewards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:582]
+2025-06-12 11:19:20,817 ERROR: Error processing card capital-one-venture-rewards: 'list' object has no attribute 'get' [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1362]
+2025-06-12 11:19:20,818 INFO: Fetching card details for amex-platinum from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/amex-platinum [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:576]
+2025-06-12 11:19:21,275 INFO: Response status for amex-platinum: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:579]
+2025-06-12 11:19:21,276 INFO: Successfully fetched data for amex-platinum [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:582]
+2025-06-12 11:19:21,277 INFO: Fetching card details for citi-premier from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/citi-premier [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:576]
+2025-06-12 11:19:21,851 INFO: Response status for citi-premier: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:579]
+2025-06-12 11:19:21,852 INFO: Successfully fetched data for citi-premier [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:582]
+2025-06-12 11:19:21,852 INFO: Using admin client to bypass RLS policies [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1388]
+2025-06-12 11:19:23,248 INFO: Successfully stored card recommendations for user 15c24c0d-964e-4072-8449-1a01646bef02 using admin client [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1402]
+2025-06-12 11:19:23,260 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1YzI0YzBkLTk2NGUtNDA3Mi04NDQ5LTFhMDE2NDZiZWYwMiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTAzNDcxMDZ9.kX-vf1rQXZnHgQYw6C0dmteBZAOPkdU1PuLG40fA0Bo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:687]
+2025-06-12 11:19:23,260 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:698]
+2025-06-12 11:19:23,260 INFO: Decoded token: {'id': '15c24c0d-964e-4072-8449-1a01646bef02', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750347106} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:703]
+2025-06-12 11:19:26,910 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1YzI0YzBkLTk2NGUtNDA3Mi04NDQ5LTFhMDE2NDZiZWYwMiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTAzNDcxMDZ9.kX-vf1rQXZnHgQYw6C0dmteBZAOPkdU1PuLG40fA0Bo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:687]
+2025-06-12 11:19:26,910 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:698]
+2025-06-12 11:19:26,910 INFO: Decoded token: {'id': '15c24c0d-964e-4072-8449-1a01646bef02', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750347106} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:703]
+2025-06-12 12:31:53,739 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:250]
+2025-06-12 12:31:53,741 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:757]
+2025-06-12 12:31:54,498 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:250]
+2025-06-12 12:31:54,501 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:757]
+2025-06-12 12:32:09,129 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1YzI0YzBkLTk2NGUtNDA3Mi04NDQ5LTFhMDE2NDZiZWYwMiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTAzNDcxMDZ9.kX-vf1rQXZnHgQYw6C0dmteBZAOPkdU1PuLG40fA0Bo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:687]

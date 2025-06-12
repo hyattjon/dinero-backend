@@ -1,71 +1,11 @@
-2025-06-07 09:13:18,922 INFO: User query result: 0 records found [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:611]
-2025-06-07 09:13:19,185 ERROR: Registration error: Email address "test1@gmail.com" is invalid [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:665]
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/gotrue/_sync/gotrue_base_api.py", line 120, in _request
-    response.raise_for_status()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/httpx/_models.py", line 829, in raise_for_status
-    raise HTTPStatusError(message, request=request, response=self)
-httpx.HTTPStatusError: Client error '400 Bad Request' for url 'https://rjeojapejdfysdchwfek.supabase.co/auth/v1/signup'
-For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/dinero-backend/app.py", line 618, in register
-    signup_data = supabase.auth.sign_up({
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/gotrue/_sync/gotrue_client.py", line 217, in sign_up
-    response = self._request(
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/gotrue/_sync/gotrue_base_api.py", line 125, in _request
-    raise handle_exception(e)
-gotrue.errors.AuthApiError: Email address "test1@gmail.com" is invalid
-2025-06-07 09:14:20,669 INFO: Starting to fetch rewards data for 20 cards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:988]
-2025-06-07 09:14:20,669 INFO: Fetching card details for amex-gold from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/amex-gold [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:471]
-2025-06-07 09:14:21,445 INFO: Response status for amex-gold: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:474]
-2025-06-07 09:14:21,445 INFO: Successfully fetched data for amex-gold [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:477]
-2025-06-07 09:14:21,446 INFO: Fetching card details for chase-sapphire-preferred from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/chase-sapphire-preferred [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:471]
-2025-06-07 09:14:22,162 INFO: Response status for chase-sapphire-preferred: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:474]
-2025-06-07 09:14:22,162 INFO: Successfully fetched data for chase-sapphire-preferred [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:477]
-2025-06-07 09:14:22,163 ERROR: Error processing card chase-sapphire-preferred: 'list' object has no attribute 'get' [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1020]
-2025-06-07 09:14:22,163 INFO: Fetching card details for capital-one-venture-rewards from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/capital-one-venture-rewards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:471]
-2025-06-07 09:14:22,778 INFO: Response status for capital-one-venture-rewards: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:474]
-2025-06-07 09:14:22,778 INFO: Successfully fetched data for capital-one-venture-rewards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:477]
-2025-06-07 09:14:22,779 ERROR: Error processing card capital-one-venture-rewards: 'list' object has no attribute 'get' [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1020]
-2025-06-07 09:14:22,779 INFO: Fetching card details for amex-platinum from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/amex-platinum [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:471]
-2025-06-07 09:14:23,390 INFO: Response status for amex-platinum: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:474]
-2025-06-07 09:14:23,391 INFO: Successfully fetched data for amex-platinum [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:477]
-2025-06-07 09:14:23,392 INFO: Fetching card details for citi-premier from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/citi-premier [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:471]
-2025-06-07 09:14:24,005 INFO: Response status for citi-premier: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:474]
-2025-06-07 09:14:24,005 INFO: Successfully fetched data for citi-premier [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:477]
-2025-06-07 09:14:24,224 INFO: Stored card recommendations for user 918f441e-a6b2-4b3d-9837-c9c3d92851dc [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1058]
-2025-06-07 09:22:05,542 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:151]
-2025-06-07 09:22:05,562 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1165]
-2025-06-07 09:39:01,431 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:151]
-2025-06-07 09:39:01,452 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1165]
-2025-06-07 09:40:35,336 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:151]
-2025-06-07 09:40:35,358 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1165]
-2025-06-09 21:39:41,393 ERROR: Token verification error: invalid JWT: unable to parse or verify signature, token signature is invalid: signature is invalid [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:580]
-2025-06-09 21:40:30,812 ERROR: Token verification error: invalid JWT: unable to parse or verify signature, token signature is invalid: signature is invalid [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:580]
-2025-06-09 21:41:34,774 ERROR: Token verification error: invalid JWT: unable to parse or verify signature, token signature is invalid: signature is invalid [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:580]
-2025-06-09 21:42:55,151 ERROR: Token verification error: invalid JWT: unable to parse or verify signature, token signature is invalid: signature is invalid [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:580]
-2025-06-09 21:44:45,353 ERROR: Token verification error: invalid JWT: unable to parse or verify signature, token signature is invalid: signature is invalid [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:580]
-2025-06-09 21:45:08,349 ERROR: Token verification error: invalid JWT: unable to parse or verify signature, token signature is invalid: signature is invalid [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:580]
-2025-06-09 21:45:36,893 ERROR: Token verification error: invalid JWT: unable to parse or verify signature, token signature is invalid: signature is invalid [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:580]
-2025-06-09 21:45:58,888 ERROR: Token verification error: invalid JWT: unable to parse or verify signature, token signature is invalid: signature is invalid [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:580]
-2025-06-10 07:24:53,768 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:154]
-2025-06-10 07:24:53,789 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1168]
-2025-06-10 07:26:25,693 ERROR: Google auth error: Token used too early, 1749558385 < 1749558386. Check that your computer's clock is set correctly. [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:739]
-2025-06-10 07:28:36,049 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:154]
-2025-06-10 07:28:36,065 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1168]
-2025-06-10 07:29:33,923 ERROR: Token verification error: invalid JWT: unable to parse or verify signature, token signature is invalid: signature is invalid [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:583]
-2025-06-10 07:29:40,825 ERROR: Token verification error: invalid JWT: unable to parse or verify signature, token signature is invalid: signature is invalid [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:583]
-2025-06-10 07:29:49,362 ERROR: Google auth error: Token used too early, 1749558589 < 1749558590. Check that your computer's clock is set correctly. [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:739]
-2025-06-10 07:29:58,321 ERROR: Google auth error: Token used too early, 1749558598 < 1749558600. Check that your computer's clock is set correctly. [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:739]
-2025-06-10 07:30:26,232 ERROR: Google auth error: Token used too early, 1749558626 < 1749558627. Check that your computer's clock is set correctly. [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:739]
-2025-06-10 20:00:16,354 ERROR: Token verification error: invalid JWT: unable to parse or verify signature, token signature is invalid: signature is invalid [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:583]
-2025-06-10 20:01:07,799 ERROR: Token verification error: invalid JWT: unable to parse or verify signature, token signature is invalid: signature is invalid [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:583]
-2025-06-10 20:04:31,455 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:154]
-2025-06-10 20:04:31,476 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1174]
-2025-06-10 20:05:12,218 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imh5YXR0LmpvbmF0aGFuOTlAZ21haWwuY29tIiwiZXhwIjoxNzQ5NjkwMzExfQ.Z4V3UelfuqxuksQ_6wD9KaD0KhGoxRW7RpjqhYnI7jA [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:561]
-2025-06-10 20:05:12,219 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:572]
-2025-06-10 20:05:12,219 INFO: Decoded token: {'email': 'hyatt.jonathan99@gmail.com', 'exp': 1749690311} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:574]
-2025-06-10 20:05:12,219 ERROR: No user ID in token [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:579]
+2025-06-12 12:38:14,571 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:698]
+2025-06-12 12:38:14,572 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1YzI0YzBkLTk2NGUtNDA3Mi04NDQ5LTFhMDE2NDZiZWYwMiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTAzNTQ2ODd9.x2BcoH9p3pFh9QEJrblS8bVtcGd21yi2RywW-AtTjME [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:687]
+2025-06-12 12:38:14,576 INFO: Decoded token: {'id': '15c24c0d-964e-4072-8449-1a01646bef02', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750354687} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:703]
+2025-06-12 12:38:14,576 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:698]
+2025-06-12 12:38:14,577 INFO: Decoded token: {'id': '15c24c0d-964e-4072-8449-1a01646bef02', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750354687} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:703]
+2025-06-12 12:38:20,303 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1YzI0YzBkLTk2NGUtNDA3Mi04NDQ5LTFhMDE2NDZiZWYwMiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTAzNTQ2ODd9.x2BcoH9p3pFh9QEJrblS8bVtcGd21yi2RywW-AtTjME [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:687]
+2025-06-12 12:38:20,303 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:698]
+2025-06-12 12:38:20,303 INFO: Decoded token: {'id': '15c24c0d-964e-4072-8449-1a01646bef02', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750354687} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:703]
+2025-06-12 12:38:20,303 INFO: Using admin client to fetch recommendation history [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1477]
+2025-06-12 12:38:20,657 INFO: History data count: 5 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1492]
+2025-06-12 12:40:05,883 INFO: Application shutdown [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:2013]

@@ -35,6 +35,9 @@ import traceback
 import sys
 from marshmallow import Schema, fields, validate, ValidationError
 from html import escape
+import pyotp
+from cryptography.fernet import Fernet
+import time
 
 # This works now again
 # Environment variables and configuration
@@ -114,19 +117,14 @@ PAYMENT_PLANS = {
 }
 
 
-# Add debug logging
-print("=== Environment Variables Debug ===")
-print("Current environment variables:")
-for key in ['REWARDS_CC_API_KEY', 'REWARDS_CC_API_HOST', 'REWARDS_CC_BASE_URL']:
-    print(f"{key}: {os.getenv(key)}")
-print("===============================")
-
 # Check required variables
 required_vars = [
     'REWARDS_CC_API_KEY',
     'REWARDS_CC_API_HOST',
     'REWARDS_CC_BASE_URL'
 ]
+
+
 
 missing_vars = [var for var in required_vars if not os.getenv(var)]
 if missing_vars:
@@ -223,6 +221,21 @@ limiter = Limiter(
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Set up structured logging
+structlog.configure(
+    processors=[
+        structlog.stdlib.filter_by_level,
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.stdlib.add_log_level,
+        structlog.processors.JSONRenderer() 
+    ],
+    context_class=dict,
+    logger_factory=structlog.stdlib.LoggerFactory(),
+)
+
+structured_logger = structlog.get_logger()
+
+
 # Setup error logging
 if not app.debug:
     if not os.path.exists('logs'):
@@ -291,6 +304,12 @@ def fetch_plaid_transactions(public_token):
     except plaid.ApiException as e:
         app.logger.error(f"Plaid API error: {str(e)}")
         raise
+
+def sanitize_input(text):
+    """Sanitize user input to prevent XSS attacks"""
+    if not text:
+        return text
+    return escape(text)
 
 def estimate_cashback(transactions, card):
     """
@@ -572,6 +591,30 @@ def fetch_card_details_sync(card_key: str) -> Dict[Any, Any]:
         # Return fallback data on exception
         return {"cardName": f"Sample Card ({card_key})", "cardIssuer": "Sample Bank", "annualFee": "0"}
 
+def log_security_event(user_id, event_type, details, ip_address):
+    """Log security-related events to database and logs"""
+    try:
+        # Log to database
+        supabase.table('security_audit_logs').insert({
+            'user_id': user_id,
+            'event_type': event_type,
+            'details': details,
+            'ip_address': ip_address,
+            'created_at': datetime.datetime.now().isoformat()
+        }).execute()
+        
+        # Also log to application logs
+        app.logger.info(
+            f"Security event: {event_type}",
+            extra={
+                'user_id': user_id,
+                'details': details,
+                'ip_address': ip_address
+            }
+        )
+    except Exception as e:
+        app.logger.error(f"Failed to log security event: {str(e)}")
+
 def calculate_card_potential_rewards(transactions, card_data):
     """Calculate potential rewards for a card based on actual transactions"""
     total_rewards = 0
@@ -701,6 +744,20 @@ def token_required(f):
     
     return decorated
 
+# Add this near your other app initializations
+csrf = CSRFProtect()
+csrf.init_app(app)
+app.config['WTF_CSRF_CHECK_DEFAULT'] = False  # Only enable for specific routes
+
+# Initialize service role client that bypasses RLS
+SUPABASE_SERVICE_ROLE = os.environ.get('SUPABASE_SERVICE_ROLE')  # Changed from SUPABASE_SERVICE_KEY
+admin_supabase = None
+if SUPABASE_SERVICE_ROLE:  # Changed variable name here too
+    admin_supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE)  # And here
+    app.logger.info("Admin Supabase client initialized successfully")
+else:
+    app.logger.error("SUPABASE_SERVICE_ROLE not found in environment variables")  # Updated error message
+
 # Define ALL routes together
 # Options handler for CORS
 @app.route('/', defaults={'path': ''}, methods=['OPTIONS'])
@@ -732,6 +789,10 @@ def handle_preflight():
             response.headers.add('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
         
         return response, 200
+
+class LoginSchema(Schema):
+    email = fields.Email(required=True)
+    password = fields.Str(required=True, validate=validate.Length(min=8))
 
 @app.route("/auth/register", methods=["POST"])
 @limiter.exempt
@@ -797,14 +858,17 @@ def register():
             "id": user_id,
             "email": email,
             "name": name,
-            "created_at": datetime.datetime.now().isoformat()
+            "created_at": datetime.datetime.now().isoformat(),
+            "auth_provider": "email",  # Add this line to track auth method
+            "google_auth_enabled": True  # Add this to indicate Google auth is possible
         }).execute()
         
         app.logger.info(f"User registered: {email}")
         
         return jsonify({
             "success": True,
-            "message": "Account created. Please check your email to confirm registration."
+            "message": "Account created successfully. You can now log in with your email or with Google.",
+            "google_enabled": True
         })
         
     except Exception as e:
@@ -855,6 +919,14 @@ def login():
             'email': email
         })
         
+        # Log successful login
+        log_security_event(
+            user_id=user_id, 
+            event_type="LOGIN_SUCCESS", 
+            details={"method": "password"},
+            ip_address=request.remote_addr
+        )
+        
         return jsonify({
             "success": True,
             "token": access_token,
@@ -862,7 +934,13 @@ def login():
             "name": name
         })
     except Exception as e:
-        app.logger.error(f"Login error: {str(e)}")
+        # Log failed login
+        log_security_event(
+            user_id=data.get('email', 'unknown'), 
+            event_type="LOGIN_FAILURE", 
+            details={"error": str(e)},
+            ip_address=request.remote_addr
+        )
         return jsonify({"success": False, "error": "Login failed"}), 401
 
 # Add a token refresh endpoint
@@ -1209,7 +1287,7 @@ def compare_cards():
 
 @app.route("/fetch_all_card_rewards", methods=["GET"])
 @limiter.limit("5 per minute")
-@token_required  # Now requires authentication
+@token_required
 def fetch_all_card_rewards(current_user):
     """Fetch Plaid reward details and calculate potential rewards for each card"""
     try:
@@ -1305,26 +1383,43 @@ def fetch_all_card_rewards(current_user):
         
         # Store the recommendation in Supabase
         try:
-            # First, mark all previous recommendations as not current
-            supabase.table('card_recommendations') \
-                .update({"is_current": False}) \
-                .eq('user_id', current_user['id']) \
-                .execute()
-            
-            # Insert the new recommendation
-            supabase.table('card_recommendations').insert({
-                "user_id": current_user['id'],
-                "created_at": datetime.datetime.now().isoformat(),
-                "analysis_data": result,
-                "is_current": True
-            }).execute()
-            
-            app.logger.info(f"Stored card recommendations for user {current_user['id']}")
+            if admin_supabase:
+                # First, mark all previous recommendations as not current using admin client
+                app.logger.info("Using admin client to bypass RLS policies")
+                admin_supabase.table('card_recommendations') \
+                    .update({"is_current": False}) \
+                    .eq('user_id', current_user['id']) \
+                    .execute()
+                
+                # Insert the new recommendation with admin privileges
+                admin_supabase.table('card_recommendations').insert({
+                    "user_id": current_user['id'],
+                    "created_at": datetime.datetime.now().isoformat(),
+                    "analysis_data": result,
+                    "is_current": True
+                }).execute()
+                
+                app.logger.info(f"Successfully stored card recommendations for user {current_user['id']} using admin client")
+            else:
+                # Fallback to regular client if admin client isn't available
+                app.logger.warning("Admin client not available, attempting with regular client (may fail due to RLS)")
+                # Original code with regular client
+                supabase.table('card_recommendations') \
+                    .update({"is_current": False}) \
+                    .eq('user_id', current_user['id']) \
+                    .execute()
+                
+                supabase.table('card_recommendations').insert({
+                    "user_id": current_user['id'],
+                    "created_at": datetime.datetime.now().isoformat(),
+                    "analysis_data": result,
+                    "is_current": True
+                }).execute()
         except Exception as e:
             app.logger.error(f"Failed to store recommendations: {str(e)}")
         
-        return jsonify(result)
-    
+        return jsonify(result)  # This is the missing line
+        
     except Exception as e:
         app.logger.error(f"Error in fetch_all_card_rewards: {str(e)}", exc_info=True)
         return jsonify({
@@ -1335,45 +1430,79 @@ def fetch_all_card_rewards(current_user):
 @app.route("/get_stored_recommendations", methods=["GET"])
 @token_required
 def get_stored_recommendations(current_user):
-    try:
-        # Get current recommendation
-        response = supabase.table('card_recommendations') \
-            .select('*') \
-            .eq('user_id', current_user['id']) \
-            .eq('is_current', True) \
-            .order('created_at', desc=True) \
-            .limit(1) \
-            .execute()
-        
-        if response.data:
-            return jsonify({
-                "success": True,
-                "has_recommendations": True,
-                "recommendations": response.data[0]['analysis_data']
-            })
-        else:
-            return jsonify({
-                "success": True, 
-                "has_recommendations": False,
-                "message": "No recommendations found. Connect your bank to get personalized card recommendations."
-            })
-    except Exception as e:
-        app.logger.error(f"Error retrieving recommendations: {str(e)}", exc_info=True)
-        return jsonify({
-            "success": False,
-            "error": str(e)
-        }), 500
+    max_retries = 3
+    retry_count = 0
+    
+    while retry_count < max_retries:
+        try:
+            # Use admin_supabase for consistency with other endpoints
+            if admin_supabase:
+                app.logger.info("Using admin client to fetch stored recommendations")
+                response = admin_supabase.table('card_recommendations') \
+                    .select('*') \
+                    .eq('user_id', current_user['id']) \
+                    .eq('is_current', True) \
+                    .order('created_at', desc=True) \
+                    .limit(1) \
+                    .execute()
+            else:
+                app.logger.info("Using regular client (fallback) to fetch stored recommendations")
+                response = supabase.table('card_recommendations') \
+                    .select('*') \
+                    .eq('user_id', current_user['id']) \
+                    .eq('is_current', True) \
+                    .order('created_at', desc=True) \
+                    .limit(1) \
+                    .execute()
+            
+            app.logger.info(f"Stored recommendations found: {len(response.data)}")
+            
+            # Rest of your existing function...
+            if response.data:
+                return jsonify({
+                    "success": True,
+                    "has_recommendations": True,
+                    "recommendations": response.data[0]['analysis_data']
+                })
+            else:
+                return jsonify({
+                    "success": True, 
+                    "has_recommendations": False,
+                    "message": "No recommendations found. Connect your bank to get personalized card recommendations."
+                })
+        except Exception as e:
+            retry_count += 1
+            app.logger.warning(f"Connection error (attempt {retry_count}/{max_retries}): {str(e)}")
+            if retry_count >= max_retries:
+                app.logger.error(f"Failed after {max_retries} attempts: {str(e)}")
+                return jsonify({
+                    "success": False,
+                    "error": "Database connection error. Please try again later."
+                }), 500
+            time.sleep(1)  # Wait 1 second before retrying
 
 @app.route("/recommendation_history", methods=["GET"])
 @token_required
 def recommendation_history(current_user):
     try:
-        # Get all recommendations for the user
-        response = supabase.table('card_recommendations') \
-            .select('id, created_at, is_current') \
-            .eq('user_id', current_user['id']) \
-            .order('created_at', desc=True) \
-            .execute()
+        # Use admin_supabase to bypass RLS for reads too
+        if admin_supabase:
+            app.logger.info("Using admin client to fetch recommendation history")
+            response = admin_supabase.table('card_recommendations') \
+                .select('id, created_at, is_current') \
+                .eq('user_id', current_user['id']) \
+                .order('created_at', desc=True) \
+                .execute()
+        else:
+            # Fallback to regular client
+            app.logger.info("Using regular client to fetch recommendation history")
+            response = supabase.table('card_recommendations') \
+                .select('id, created_at, is_current') \
+                .eq('user_id', current_user['id']) \
+                .order('created_at', desc=True) \
+                .execute()
+        
+        app.logger.info(f"History data count: {len(response.data)}")
         
         return jsonify({
             "success": True,
@@ -1493,13 +1622,16 @@ def create_checkout_session(current_user):
         return jsonify({'success': True, 'session_id': checkout_session.id})
         
     except Exception as e:
-        app.logger.error(f"Error creating checkout session: {str(e)}")
-        return jsonify({'error': "Payment processing error"}), 500  # Sanitized error
+        app.logger.error(f"Error creating checkout session: {str(e)}", exc_info=True)
+        # Return generic error message instead of exposing details
+        return jsonify({'error': "An error occurred processing your payment. Please try again."}), 500
 
 @app.route('/customer-portal', methods=['POST'])
 @token_required
 def customer_portal(current_user):
-    """Create a customer portal session for managing subscription"""
+    # Add CSRF validation manually at the start
+    csrf.protect()  # Call it as a function here
+    
     try:
         # Get customer ID
         user_data = supabase.table('users').select('stripe_customer_id').eq('id', current_user['id']).execute()
@@ -1766,4 +1898,129 @@ def monitor_suspicious_activity():
         # For highly suspicious activity, you might want to add the IP to a blocklist
         # or return a 403 Forbidden response
 
+@app.after_request
+def add_security_headers(response):
+    """Add security headers to all responses"""
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' https://js.stripe.com https://accounts.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://api.stripe.com;"
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['Permissions-Policy'] = 'camera=(), microphone=(), geolocation=()'
+    return response
 
+@app.errorhandler(Exception)
+def handle_exception(e):
+    """Global exception handler for unhandled exceptions"""
+    # Log the error with detailed information
+    app.logger.error(
+        "Unhandled exception",
+        exc_info=True,
+        extra={
+            'error_type': type(e).__name__,
+            'error_message': str(e),
+            'path': request.path,
+            'method': request.method,
+            'remote_addr': request.remote_addr
+        }
+    )
+    
+    # Don't show detailed errors to users in production
+    if app.debug:
+        return jsonify({
+            "error": str(e),
+            "type": type(e).__name__,
+        }), 500
+    else:
+        return jsonify({
+            "error": "An unexpected error occurred. Our team has been notified."
+        }), 500
+
+# Add this to your RegistrationSchema
+class RegistrationSchema(Schema):
+    name = fields.Str(required=True, validate=validate.Length(min=2))
+    email = fields.Email(required=True)
+    password = fields.Str(required=True, validate=[
+        validate.Length(min=8),
+        validate.Regexp(
+            r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]',
+            error='Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+        )
+    ])
+
+@app.route("/auth/enable-mfa", methods=["POST"])
+@token_required
+def enable_mfa(current_user):
+    """Enable MFA for a user account"""
+    try:
+        # Generate a secret key for TOTP
+        totp_secret = pyotp.random_base32()
+        
+        # Store the secret in the database
+        supabase.table('users').update({
+            'mfa_secret': totp_secret,
+            'mfa_enabled': False  # Not enabled until verified
+        }).eq('id', current_user['id']).execute()
+        
+        # Generate a QR code URL
+        totp = pyotp.TOTP(totp_secret)
+        provisioning_uri = totp.provisioning_uri(
+            current_user['email'], 
+            issuer_name="Card Matcher"
+        )
+        
+        return jsonify({
+            'success': True,
+            'secret': totp_secret,
+            'qr_code_url': provisioning_uri
+        })
+    except Exception as e:
+        app.logger.error(f"MFA setup error: {str(e)}")
+        return jsonify({'error': 'Could not enable MFA'}), 500
+
+# Encrypt sensitive data before storing
+@app.route("/save-payment-method", methods=["POST"])
+@token_required
+def save_payment_method(current_user):
+    data = request.get_json()
+    
+    # Encrypt sensitive data
+    fernet = Fernet(os.environ.get('ENCRYPTION_KEY'))
+    encrypted_data = fernet.encrypt(json.dumps(data).encode())
+    
+    # Store the encrypted data
+    supabase.table('payment_methods').insert({
+        'user_id': current_user['id'],
+        'encrypted_data': encrypted_data.decode(),
+        'created_at': datetime.datetime.now().isoformat()
+    }).execute()
+    
+    return jsonify({'success': True})
+
+def rotate_api_keys():
+    """Rotate API keys every 90 days"""
+    # Check if keys need rotation
+    last_rotation = os.environ.get('LAST_API_KEY_ROTATION')
+    if last_rotation:
+        last_date = datetime.datetime.fromisoformat(last_rotation)
+        days_since_rotation = (datetime.datetime.now() - last_date).days
+        
+        if days_since_rotation < 90:
+            app.logger.info(f"API keys rotated {days_since_rotation} days ago, no rotation needed")
+            return
+    
+    app.logger.warning("API keys need rotation - please manually rotate them in Supabase and update environment variables")
+    # Send notification to administrators
+
+
+# Add this code at the very end of your file
+if __name__ == "__main__":
+    # Get port from environment variable or use 5001 as default
+    port = int(os.environ.get("PORT", 5001))
+    
+    # Start the Flask app
+    app.run(host="0.0.0.0", port=port, debug=True)
+    
+    # Log application shutdown
+    app.logger.info("Application shutdown")

@@ -1,100 +1,59 @@
-2025-06-05 10:43:03,357 INFO: Response status for citi-custom-cash: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:43:03,365 INFO: Successfully fetched data for citi-custom-cash [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
-2025-06-05 10:43:04,866 INFO: Fetching card details for us-bank-altitude-go [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:43:04,868 INFO: Fetching card details for chase-freedom-flex [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:43:05,408 INFO: Response status for us-bank-altitude-go: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:43:05,409 INFO: Successfully fetched data for us-bank-altitude-go [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
-2025-06-05 10:43:05,410 INFO: Response status for chase-freedom-flex: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:43:05,410 INFO: Successfully fetched data for chase-freedom-flex [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
-2025-06-05 10:43:06,912 INFO: Fetching card details for ink-business-preferred [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:43:06,914 INFO: Fetching card details for amex-delta-reserve [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:43:07,456 INFO: Response status for amex-delta-reserve: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:43:07,456 INFO: Successfully fetched data for amex-delta-reserve [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
-2025-06-05 10:43:07,458 INFO: Response status for ink-business-preferred: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:43:07,458 INFO: Successfully fetched data for ink-business-preferred [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
-2025-06-05 10:43:08,959 INFO: Fetching card details for amex-hilton-aspire [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:43:08,961 INFO: Fetching card details for capital-one-spark-cash-plus [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:630]
-2025-06-05 10:43:09,447 INFO: Response status for capital-one-spark-cash-plus: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:43:09,448 INFO: Successfully fetched data for capital-one-spark-cash-plus [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
-2025-06-05 10:43:09,449 INFO: Response status for amex-hilton-aspire: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:638]
-2025-06-05 10:43:09,449 INFO: Successfully fetched data for amex-hilton-aspire [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:641]
-2025-06-05 10:57:42,671 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:334]
-2025-06-05 10:57:42,703 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:832]
-2025-06-05 11:11:18,505 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:339]
-2025-06-05 11:11:18,538 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:924]
-2025-06-05 11:12:17,990 ERROR: Exception on /auth/register [POST] [in /Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py:875]
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_cors/extension.py", line 176, in wrapped_function
-    return cors_after_request(app.make_response(f(*args, **kwargs)))
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/asgiref/sync.py", line 254, in __call__
-    return call_result.result()
-  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/_base.py", line 438, in result
-    return self.__get_result()
-  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/_base.py", line 390, in __get_result
-    raise self._exception
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/asgiref/sync.py", line 331, in main_wrap
-    result = await self.awaitable(*args, **kwargs)
-  File "/Users/jonathanhyatt/dinero/dinero-backend/app.py", line 370, in register
-    data = await request.get_json()
-TypeError: object dict can't be used in 'await' expression
-2025-06-05 11:15:36,433 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:339]
-2025-06-05 11:15:36,464 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:924]
-2025-06-05 11:19:21,866 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:339]
-2025-06-05 11:19:21,896 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:924]
-2025-06-05 11:21:29,202 ERROR: Exception on /auth/register [POST] [in /Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py:875]
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_cors/extension.py", line 176, in wrapped_function
-    return cors_after_request(app.make_response(f(*args, **kwargs)))
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-  File "/Users/jonathanhyatt/dinero/dinero-backend/app.py", line 378, in register
-    if email in users:
-NameError: name 'users' is not defined
-2025-06-05 11:23:07,417 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:339]
-2025-06-05 11:23:07,446 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:924]
-2025-06-05 11:23:30,335 ERROR: Exception on /auth/register [POST] [in /Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py:875]
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_cors/extension.py", line 176, in wrapped_function
-    return cors_after_request(app.make_response(f(*args, **kwargs)))
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-  File "/Users/jonathanhyatt/dinero/dinero-backend/app.py", line 378, in register
-    if email in users:
-NameError: name 'users' is not defined
-2025-06-05 13:12:23,711 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:339]
-2025-06-05 13:12:23,743 INFO: Starting Hypercorn server... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:924]
-2025-06-05 13:14:43,872 ERROR: Exception on /auth/register [POST] [in /Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py:875]
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_cors/extension.py", line 176, in wrapped_function
-    return cors_after_request(app.make_response(f(*args, **kwargs)))
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-  File "/Users/jonathanhyatt/dinero/dinero-backend/app.py", line 378, in register
-    if not name or not email or not password:
-NameError: name 'users' is not defined
+2025-06-12 10:44:47,513 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1YzI0YzBkLTk2NGUtNDA3Mi04NDQ5LTFhMDE2NDZiZWYwMiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTAzNDcxMDZ9.kX-vf1rQXZnHgQYw6C0dmteBZAOPkdU1PuLG40fA0Bo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:686]
+2025-06-12 10:44:47,516 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:697]
+2025-06-12 10:44:47,517 INFO: Decoded token: {'id': '15c24c0d-964e-4072-8449-1a01646bef02', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750347106} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:702]
+2025-06-12 10:44:48,787 INFO: Starting to fetch rewards data for 20 cards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1320]
+2025-06-12 10:44:48,788 INFO: Fetching card details for amex-gold from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/amex-gold [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:575]
+2025-06-12 10:44:49,429 INFO: Response status for amex-gold: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:578]
+2025-06-12 10:44:49,429 INFO: Successfully fetched data for amex-gold [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:581]
+2025-06-12 10:44:49,430 INFO: Fetching card details for chase-sapphire-preferred from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/chase-sapphire-preferred [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:575]
+2025-06-12 10:44:49,854 INFO: Response status for chase-sapphire-preferred: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:578]
+2025-06-12 10:44:49,855 INFO: Successfully fetched data for chase-sapphire-preferred [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:581]
+2025-06-12 10:44:49,855 ERROR: Error processing card chase-sapphire-preferred: 'list' object has no attribute 'get' [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1352]
+2025-06-12 10:44:49,856 INFO: Fetching card details for capital-one-venture-rewards from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/capital-one-venture-rewards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:575]
+2025-06-12 10:44:50,332 INFO: Response status for capital-one-venture-rewards: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:578]
+2025-06-12 10:44:50,333 INFO: Successfully fetched data for capital-one-venture-rewards [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:581]
+2025-06-12 10:44:50,333 ERROR: Error processing card capital-one-venture-rewards: 'list' object has no attribute 'get' [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1352]
+2025-06-12 10:44:50,333 INFO: Fetching card details for amex-platinum from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/amex-platinum [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:575]
+2025-06-12 10:44:50,785 INFO: Response status for amex-platinum: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:578]
+2025-06-12 10:44:50,786 INFO: Successfully fetched data for amex-platinum [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:581]
+2025-06-12 10:44:50,787 INFO: Fetching card details for citi-premier from https://rewards-credit-card-api.p.rapidapi.com/creditcard-plaid-bycard/citi-premier [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:575]
+2025-06-12 10:44:51,281 INFO: Response status for citi-premier: 200 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:578]
+2025-06-12 10:44:51,281 INFO: Successfully fetched data for citi-premier [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:581]
+2025-06-12 10:44:51,953 ERROR: Failed to store recommendations: {'message': 'new row violates row-level security policy for table "card_recommendations"', 'code': '42501', 'hint': None, 'details': None} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1392]
+2025-06-12 10:44:51,964 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1YzI0YzBkLTk2NGUtNDA3Mi04NDQ5LTFhMDE2NDZiZWYwMiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTAzNDcxMDZ9.kX-vf1rQXZnHgQYw6C0dmteBZAOPkdU1PuLG40fA0Bo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:686]
+2025-06-12 10:44:51,965 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:697]
+2025-06-12 10:44:51,965 INFO: Decoded token: {'id': '15c24c0d-964e-4072-8449-1a01646bef02', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750347106} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:702]
+2025-06-12 10:44:58,324 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1YzI0YzBkLTk2NGUtNDA3Mi04NDQ5LTFhMDE2NDZiZWYwMiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTAzNDcxMDZ9.kX-vf1rQXZnHgQYw6C0dmteBZAOPkdU1PuLG40fA0Bo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:686]
+2025-06-12 10:44:58,324 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:697]
+2025-06-12 10:44:58,324 INFO: Decoded token: {'id': '15c24c0d-964e-4072-8449-1a01646bef02', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750347106} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:702]
+2025-06-12 10:47:49,061 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:249]
+2025-06-12 10:47:55,212 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:249]
+2025-06-12 10:48:45,373 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:249]
+2025-06-12 10:48:45,374 ERROR: SUPABASE_SERVICE_KEY not found in environment variables [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:758]
+2025-06-12 10:48:47,436 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:249]
+2025-06-12 10:48:47,436 ERROR: SUPABASE_SERVICE_KEY not found in environment variables [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:758]
+2025-06-12 10:49:31,595 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:249]
+2025-06-12 10:49:31,595 ERROR: SUPABASE_SERVICE_KEY not found in environment variables [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:758]
+2025-06-12 10:49:34,718 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:249]
+2025-06-12 10:49:34,718 ERROR: SUPABASE_SERVICE_KEY not found in environment variables [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:758]
+2025-06-12 10:51:29,983 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:250]
+2025-06-12 10:51:29,984 ERROR: SUPABASE_SERVICE_KEY not found in environment variables [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:759]
+2025-06-12 10:51:33,140 INFO: Application shutdown [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1998]
+2025-06-12 10:51:35,063 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:250]
+2025-06-12 10:51:35,063 ERROR: SUPABASE_SERVICE_KEY not found in environment variables [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:759]
+2025-06-12 10:51:35,856 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:250]
+2025-06-12 10:51:35,856 ERROR: SUPABASE_SERVICE_KEY not found in environment variables [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:759]
+2025-06-12 10:51:47,325 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1YzI0YzBkLTk2NGUtNDA3Mi04NDQ5LTFhMDE2NDZiZWYwMiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTAzNDcxMDZ9.kX-vf1rQXZnHgQYw6C0dmteBZAOPkdU1PuLG40fA0Bo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:687]
+2025-06-12 10:51:47,325 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:698]
+2025-06-12 10:51:47,326 INFO: Decoded token: {'id': '15c24c0d-964e-4072-8449-1a01646bef02', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750347106} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:703]
+2025-06-12 10:51:49,961 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1YzI0YzBkLTk2NGUtNDA3Mi04NDQ5LTFhMDE2NDZiZWYwMiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTAzNDcxMDZ9.kX-vf1rQXZnHgQYw6C0dmteBZAOPkdU1PuLG40fA0Bo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:687]
+2025-06-12 10:51:49,962 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1YzI0YzBkLTk2NGUtNDA3Mi04NDQ5LTFhMDE2NDZiZWYwMiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTAzNDcxMDZ9.kX-vf1rQXZnHgQYw6C0dmteBZAOPkdU1PuLG40fA0Bo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:687]
+2025-06-12 10:51:49,963 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:698]
+2025-06-12 10:51:49,963 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:698]
+2025-06-12 10:51:49,963 INFO: Decoded token: {'id': '15c24c0d-964e-4072-8449-1a01646bef02', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750347106} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:703]
+2025-06-12 10:51:49,963 INFO: Decoded token: {'id': '15c24c0d-964e-4072-8449-1a01646bef02', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750347106} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:703]
+2025-06-12 10:51:49,967 ERROR: Error retrieving subscription: [Errno 35] Resource temporarily unavailable [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1747]
+2025-06-12 10:51:49,968 WARNING: Connection error (attempt 1/3): [Errno 35] Resource temporarily unavailable [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1459]
+2025-06-12 10:51:51,067 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1YzI0YzBkLTk2NGUtNDA3Mi04NDQ5LTFhMDE2NDZiZWYwMiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTAzNDcxMDZ9.kX-vf1rQXZnHgQYw6C0dmteBZAOPkdU1PuLG40fA0Bo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:687]
+2025-06-12 10:51:51,068 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:698]
+2025-06-12 11:18:34,528 INFO: Application shutdown [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1998]
