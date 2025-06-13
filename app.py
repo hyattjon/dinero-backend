@@ -39,7 +39,7 @@ import pyotp
 from cryptography.fernet import Fernet
 import time
 
-# This works now again and again
+# This works now again and again This is the pre-react version
 # Environment variables and configuration
 load_dotenv()
 
