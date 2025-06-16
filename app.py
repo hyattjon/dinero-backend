@@ -181,7 +181,7 @@ app.config['CORS_HEADERS'] = 'Content-Type,Authorization'
 ALLOWED_ORIGINS = [
     "http://localhost:3000", 
     "http://127.0.0.1:3000",
-    "http://localhost:5173",
+    "http://localhost:5173",  # Vite dev server port
     "http://localhost:5001", 
     "http://127.0.0.1:5001",
     "https://localhost:5000",
@@ -189,6 +189,7 @@ ALLOWED_ORIGINS = [
     "https://www.cardmatcher.net",
     "https://dinero-frontend.herokuapp.com",
     "https://dinero-backend-deeac4fe8d4e.herokuapp.com",
+    "https://dinero-frontend-react.herokuapp.com",  # Add your new React frontend URL
     "http://127.0.0.1:5173"
 ]
 
@@ -754,9 +755,24 @@ def token_required(f):
     return decorated
 
 # Add this near your other app initializations
-csrf = CSRFProtect()
-csrf.init_app(app)
-app.config['WTF_CSRF_CHECK_DEFAULT'] = False  # Only enable for specific routes
+# Find the CSRFProtect initialization and modify it:
+
+csrf = CSRFProtect(app)
+
+# Add this after the CSRF initialization:
+@app.after_request
+def set_csrf_cookie(response):
+    """Set CSRF token as a cookie for React app to use"""
+    if request.path.startswith('/api/'):  # Only for API endpoints
+        response.set_cookie(
+            'csrf_token',
+            csrf.generate_csrf(),
+            max_age=3600,
+            secure=app.config['SESSION_COOKIE_SECURE'],
+            httponly=False,  # React needs to read it
+            samesite=app.config['SESSION_COOKIE_SAMESITE']
+        )
+    return response
 
 # Initialize service role client that bypasses RLS
 SUPABASE_SERVICE_ROLE = os.environ.get('SUPABASE_SERVICE_ROLE')  # Changed from SUPABASE_SERVICE_KEY
@@ -2011,6 +2027,26 @@ def save_payment_method(current_user):
     }).execute()
     
     return jsonify({'success': True})
+
+# Add this near the end of your file, after all other routes
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    """Catch-all route to support SPA routing in React"""
+    # This is only needed if you're serving the React app from the same Flask server
+    # If your React app is on a different domain (like Heroku), you don't need this
+    app.logger.info(f"Catch-all route accessed: {path}")
+    return jsonify({"message": "API endpoint not found"}), 404
+
+@app.route('/api/health')
+def health_check():
+    """Health check endpoint for the React app to verify connectivity"""
+    return jsonify({
+        "status": "ok",
+        "message": "Backend API is running",
+        "timestamp": datetime.datetime.now().isoformat()
+    })
 
 def rotate_api_keys():
     """Rotate API keys every 90 days"""
