@@ -2039,14 +2039,7 @@ def catch_all(path):
     app.logger.info(f"Catch-all route accessed: {path}")
     return jsonify({"message": "API endpoint not found"}), 404
 
-@app.route('/api/health')
-def health_check():
-    """Health check endpoint for the React app to verify connectivity"""
-    return jsonify({
-        "status": "ok",
-        "message": "Backend API is running",
-        "timestamp": datetime.datetime.now().isoformat()
-    })
+
 
 def rotate_api_keys():
     """Rotate API keys every 90 days"""
