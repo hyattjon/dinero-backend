@@ -181,12 +181,15 @@ app.config['CORS_HEADERS'] = 'Content-Type,Authorization'
 ALLOWED_ORIGINS = [
     "http://localhost:3000", 
     "http://127.0.0.1:3000",
+    "http://localhost:5173",
     "http://localhost:5001", 
     "http://127.0.0.1:5001",
+    "https://localhost:5000",
     "https://cardmatcher.net", 
     "https://www.cardmatcher.net",
     "https://dinero-frontend.herokuapp.com",
-    "https://dinero-backend-deeac4fe8d4e.herokuapp.com"
+    "https://dinero-backend-deeac4fe8d4e.herokuapp.com",
+    "http://127.0.0.1:5173"
 ]
 
 CORS(app, 
