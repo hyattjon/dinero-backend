@@ -1,43 +1,83 @@
-2025-06-14 16:00:42,896 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc0ZTA2ZTUyLTYxNjQtNDhjNi1hN2RmLWQwYTk4N2EzOGYzOSIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA1MzkwMDl9.H0H9FHVEM_Q95ZVS7zkSJdMhU6k-86FcmDlLnz6ZNE0 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:696]
-2025-06-14 16:00:42,902 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:707]
-2025-06-14 16:00:42,902 INFO: Decoded token: {'id': '74e06e52-6164-48c6-a7df-d0a987a38f39', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750539009} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:712]
-2025-06-14 16:00:42,902 INFO: Using admin client to fetch recommendation history [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1495]
-2025-06-14 16:00:43,071 INFO: History data count: 2 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1510]
-2025-06-14 16:00:43,075 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc0ZTA2ZTUyLTYxNjQtNDhjNi1hN2RmLWQwYTk4N2EzOGYzOSIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA1MzkwMDl9.H0H9FHVEM_Q95ZVS7zkSJdMhU6k-86FcmDlLnz6ZNE0 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:696]
-2025-06-14 16:00:43,075 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:707]
-2025-06-14 16:00:43,075 INFO: Decoded token: {'id': '74e06e52-6164-48c6-a7df-d0a987a38f39', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750539009} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:712]
-2025-06-14 16:00:43,075 INFO: Using admin client to fetch recommendation history [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1495]
-2025-06-14 16:00:43,231 INFO: History data count: 2 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1510]
-2025-06-14 16:00:44,144 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc0ZTA2ZTUyLTYxNjQtNDhjNi1hN2RmLWQwYTk4N2EzOGYzOSIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA1MzkwMDl9.H0H9FHVEM_Q95ZVS7zkSJdMhU6k-86FcmDlLnz6ZNE0 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:696]
-2025-06-14 16:00:44,144 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:707]
-2025-06-14 16:00:44,147 INFO: Decoded token: {'id': '74e06e52-6164-48c6-a7df-d0a987a38f39', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750539009} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:712]
-2025-06-14 16:00:44,149 ERROR: Unhandled exception [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1931]
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 915, in full_dispatch_request
-    rv = self.preprocess_request()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 1291, in preprocess_request
-    rv = self.ensure_sync(before_func)()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_limiter/extension.py", line 1180, in _check_request_limit
-    raise e
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_limiter/extension.py", line 1177, in _check_request_limit
-    self.__evaluate_limits(endpoint, all_limits)
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_limiter/extension.py", line 1161, in __evaluate_limits
-    raise RateLimitExceeded(
-flask_limiter.errors.RateLimitExceeded: 429 Too Many Requests: 50 per 1 hour
-2025-06-14 16:00:44,162 ERROR: Unhandled exception [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1931]
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 915, in full_dispatch_request
-    rv = self.preprocess_request()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 1291, in preprocess_request
-    rv = self.ensure_sync(before_func)()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_limiter/extension.py", line 1180, in _check_request_limit
-    raise e
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_limiter/extension.py", line 1177, in _check_request_limit
-    self.__evaluate_limits(endpoint, all_limits)
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_limiter/extension.py", line 1161, in __evaluate_limits
-    raise RateLimitExceeded(
-flask_limiter.errors.RateLimitExceeded: 429 Too Many Requests: 50 per 1 hour
-2025-06-14 16:00:44,324 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc0ZTA2ZTUyLTYxNjQtNDhjNi1hN2RmLWQwYTk4N2EzOGYzOSIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA1MzkwMDl9.H0H9FHVEM_Q95ZVS7zkSJdMhU6k-86FcmDlLnz6ZNE0 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:696]
-2025-06-14 16:00:44,324 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:707]
-2025-06-14 16:00:44,325 INFO: Decoded token: {'id': '74e06e52-6164-48c6-a7df-d0a987a38f39', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750539009} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:712]
-2025-06-14 16:00:54,558 INFO: Application shutdown [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:2039]
+2025-06-17 06:37:32,758 INFO: Application shutdown [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:2069]
+2025-06-17 06:37:34,911 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:260]
+2025-06-17 06:37:34,914 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:791]
+2025-06-17 06:37:35,660 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:260]
+2025-06-17 06:37:35,663 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:791]
+2025-06-17 07:28:07,070 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:260]
+2025-06-17 07:28:07,073 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:791]
+2025-06-17 07:28:09,051 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:260]
+2025-06-17 07:28:09,054 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:791]
+2025-06-17 07:28:14,097 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:260]
+2025-06-17 07:28:14,100 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:791]
+2025-06-17 07:28:19,181 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:260]
+2025-06-17 07:28:19,184 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:791]
+2025-06-17 07:29:30,431 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 07:29:30,434 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
+2025-06-17 07:29:31,174 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 07:29:31,177 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
+2025-06-17 07:37:49,771 INFO: Application shutdown [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:2080]
+2025-06-17 07:37:50,009 INFO: Application shutdown [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:2080]
+2025-06-17 07:37:52,136 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 07:37:52,139 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
+2025-06-17 07:37:52,890 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 07:37:52,893 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
+2025-06-17 07:39:54,028 INFO: Application shutdown [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:2080]
+2025-06-17 07:39:54,262 INFO: Application shutdown [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:2080]
+2025-06-17 07:39:56,709 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 07:39:56,711 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
+2025-06-17 07:39:57,465 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 07:39:57,468 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
+2025-06-17 07:58:59,979 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 07:58:59,981 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
+2025-06-17 07:59:01,983 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 07:59:01,986 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
+2025-06-17 07:59:21,369 INFO: Application shutdown [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:2080]
+2025-06-17 07:59:21,605 INFO: Application shutdown [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:2080]
+2025-06-17 07:59:46,012 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 07:59:46,015 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
+2025-06-17 07:59:46,754 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 07:59:46,757 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
+2025-06-17 08:10:20,408 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 08:10:20,411 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:792]
+2025-06-17 08:10:23,579 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 08:10:23,583 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
+2025-06-17 08:10:28,709 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 08:10:28,712 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
+2025-06-17 08:10:33,782 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 08:10:33,785 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
+2025-06-17 08:10:45,069 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 08:10:45,072 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
+2025-06-17 08:10:51,214 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 08:10:51,217 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
+2025-06-17 08:10:53,314 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 08:10:53,317 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
+2025-06-17 08:11:07,741 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 08:11:07,744 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:792]
+2025-06-17 08:11:11,878 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 08:11:11,880 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:792]
+2025-06-17 08:11:13,899 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 08:11:13,902 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:792]
+2025-06-17 08:11:24,190 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 08:11:24,194 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:791]
+2025-06-17 08:12:33,189 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 08:12:33,192 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:791]
+2025-06-17 08:12:35,322 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:262]
+2025-06-17 08:12:35,325 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:791]
+2025-06-17 08:44:25,763 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:263]
+2025-06-17 08:44:25,766 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
+2025-06-17 08:44:26,527 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:263]
+2025-06-17 08:44:26,530 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:793]
+2025-06-17 08:47:50,789 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:263]
+2025-06-17 08:47:50,792 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:800]
+2025-06-17 08:49:26,828 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:263]
+2025-06-17 08:49:26,831 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:800]
+2025-06-17 08:49:41,616 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:263]
+2025-06-17 08:49:41,619 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:800]
+2025-06-17 08:50:01,184 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:263]
+2025-06-17 08:50:01,187 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:800]
+2025-06-17 08:50:04,282 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:263]
+2025-06-17 08:50:04,285 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:802]
+2025-06-17 08:50:09,366 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:263]
+2025-06-17 08:50:09,369 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:815]
+2025-06-17 08:53:45,794 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:263]
+2025-06-17 08:53:45,798 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:813]

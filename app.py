@@ -8,7 +8,7 @@ import plaid
 from plaid.api import plaid_api
 from dotenv import load_dotenv
 from flask_talisman import Talisman
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, generate_csrf
 import os
 import pandas as pd
 import requests
@@ -182,9 +182,11 @@ ALLOWED_ORIGINS = [
     "http://localhost:3000", 
     "http://127.0.0.1:3000",
     "http://localhost:5173",  # Vite dev server port
+    "http://127.0.0.1:5173",  # Vite dev server alternative
     "http://localhost:5001", 
     "http://127.0.0.1:5001",
     "https://localhost:5000",
+    "http://127.0.0.1:5000",
     "https://cardmatcher.net", 
     "https://www.cardmatcher.net",
     "https://dinero-frontend.herokuapp.com",
@@ -197,7 +199,8 @@ CORS(app,
      resources={r"/*": {
          "origins": ALLOWED_ORIGINS,
          "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-         "allow_headers": ["Content-Type", "Authorization"]
+         "allow_headers": ["Content-Type", "Authorization", "X-CSRF-Token", "x-csrf-token"],
+         "expose_headers": ["X-CSRF-Token", "x-csrf-token"]
      }},
      supports_credentials=True)
 
@@ -762,17 +765,32 @@ csrf = CSRFProtect(app)
 # Add this after the CSRF initialization:
 @app.after_request
 def set_csrf_cookie(response):
-    """Set CSRF token as a cookie for React app to use"""
-    if request.path.startswith('/api/'):  # Only for API endpoints
-        response.set_cookie(
-            'csrf_token',
-            csrf.generate_csrf(),
-            max_age=3600,
-            secure=app.config['SESSION_COOKIE_SECURE'],
-            httponly=False,  # React needs to read it
-            samesite=app.config['SESSION_COOKIE_SAMESITE']
-        )
+    response.set_cookie('csrf_token', generate_csrf(), 
+                        httponly=False,  # Allow JavaScript access
+                        secure=True,     # Only send over HTTPS
+                        samesite='Lax'   # Helps prevent CSRF
+                       )
     return response
+
+
+@app.route("/api/csrf-token", methods=["GET"])
+@limiter.exempt
+def get_csrf_token():
+    """Generate and return a CSRF token"""
+    # Change this line:
+    # token = csrf.generate_csrf()
+    # To this:
+    token = generate_csrf()
+    
+    response = jsonify({'csrf_token': token})
+    # Set the CSRF token as a cookie as well
+    response.set_cookie('csrf_token', token, 
+                        httponly=False,  # Allow JavaScript access
+                        secure=True,     # Only send over HTTPS
+                        samesite='Lax'   # Helps prevent CSRF
+                       )
+    return response
+
 
 # Initialize service role client that bypasses RLS
 SUPABASE_SERVICE_ROLE = os.environ.get('SUPABASE_SERVICE_ROLE')  # Changed from SUPABASE_SERVICE_KEY
@@ -799,8 +817,9 @@ def handle_preflight():
         
         if origin in ALLOWED_ORIGINS:  # Use the global variable
             response.headers.add('Access-Control-Allow-Origin', origin)
-            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-            response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,DELETE')
+            # Add proper spacing and include CSRF token headers (both case variants)
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token, x-csrf-token')
+            response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE')
             response.headers.add('Access-Control-Allow-Credentials', 'true')
             response.headers.add('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
         
@@ -969,9 +988,24 @@ def refresh():
     return jsonify(access_token=access_token)
 
 
-@app.route("/auth/google", methods=["POST","OPTIONS"])
+@app.route("/auth/google", methods=["POST", "OPTIONS"])
 @limiter.exempt
+@csrf.exempt
 def google_auth():
+    if request.method == "OPTIONS":
+        response = make_response("")
+        origin = request.headers.get('Origin')
+        
+        if origin in ALLOWED_ORIGINS:
+            response.headers.add('Access-Control-Allow-Origin', origin)
+            # Properly formatted headers with spaces after commas
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token, x-csrf-token')
+            response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            response.headers.add('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
+        
+        return response
+
     try:
         data = request.get_json()
         token = data.get('token')
@@ -1050,7 +1084,7 @@ def google_auth():
         
         # Force CORS headers directly on this response
         origin = request.headers.get('Origin')
-        if origin in ["https://cardmatcher.net", "https://www.cardmatcher.net", "http://localhost:3000"]:
+        if origin in ["https://cardmatcher.net", "https://www.cardmatcher.net", "http://localhost:3000","http://localhost:5173","http:localhost:5173"]:
             response.headers['Access-Control-Allow-Origin'] = origin
             response.headers['Access-Control-Allow-Credentials'] = 'true'
             response.headers['Cross-Origin-Opener-Policy'] = 'same-origin-allow-popups'
@@ -1060,21 +1094,6 @@ def google_auth():
         app.logger.error(f"Google auth error: {str(e)}")
         return jsonify({"success": False, "error": "Authentication failed"}), 401
 
-@app.route("/auth/google", methods=["OPTIONS"])
-def google_auth_options():
-    response = make_response("")
-    origin = request.headers.get('Origin')
-    
-    # Use the same allowed_origins list for consistency
-    if origin in ALLOWED_ORIGINS:
-        response.headers.add('Access-Control-Allow-Origin', origin)
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        # Change this to support Google's auth popup
-        response.headers.add('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
-    
-    return response
 
 @app.route("/create_link_token", methods=["POST"])
 @token_required
@@ -2055,19 +2074,6 @@ def rotate_api_keys():
     
     app.logger.warning("API keys need rotation - please manually rotate them in Supabase and update environment variables")
     
-
-
-# Add this code at the very end of your file
-if __name__ == "__main__":
-    # Get port from environment variable or use  5001 as default
-    port = int(os.environ.get("PORT", 5001))
-    
-    # Start the Flask app
-    app.run(host="0.0.0.0", port=port, debug=True)
-    
-    # Log application shutdown
-    app.logger.info("Application shutdown")
-
 @app.errorhandler(500)
 def handle_500_error(e):
     """Handle 500 errors with proper CORS headers"""
@@ -2087,3 +2093,14 @@ def handle_500_error(e):
         response.headers.add('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
     
     return response, 500
+
+# Add this code at the very end of your file
+if __name__ == "__main__":
+    # Get port from environment variable or use  5001 as default
+    port = int(os.environ.get("PORT", 5001))
+    
+    # Start the Flask app
+    app.run(host="0.0.0.0", port=port, debug=True)
+    
+    # Log application shutdown
+    app.logger.info("Application shutdown")
