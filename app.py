@@ -1373,8 +1373,15 @@ def fetch_all_card_rewards(current_user):
         # Instead of async code, use synchronous approach
         card_analysis = []
         
-        for card_key in credit_cards[:5]:  # Limit to 5 cards for quick testing
+        for index, card_key in enumerate(credit_cards[:5]):  # Limit to 5 cards for quick testing
             try:
+                # Add a 2-second sleep between API calls to avoid rate limiting
+                # Skip the sleep before the first request
+                if index > 0:
+                    app.logger.info(f"Waiting 2 seconds before fetching next card to avoid rate limits...")
+                    time.sleep(2)
+                
+                app.logger.info(f"Fetching card {index+1}/5: {card_key}")
                 card_data = fetch_card_details_sync(card_key)
                 
                 # Handle case where card_data is a list
@@ -1442,7 +1449,6 @@ def fetch_all_card_rewards(current_user):
                 
                 app.logger.info(f"Successfully stored card recommendations for user {current_user['id']} using admin client")
             else:
-                # Fallback to regular client if admin client isn't available
                 app.logger.warning("Admin client not available, attempting with regular client (may fail due to RLS)")
                 # Original code with regular client
                 supabase.table('card_recommendations') \
@@ -1459,7 +1465,7 @@ def fetch_all_card_rewards(current_user):
         except Exception as e:
             app.logger.error(f"Failed to store recommendations: {str(e)}")
         
-        return jsonify(result)  # This is the missing line
+        return jsonify(result)
         
     except Exception as e:
         app.logger.error(f"Error in fetch_all_card_rewards: {str(e)}", exc_info=True)
@@ -1556,19 +1562,26 @@ def recommendation_history(current_user):
             "error": str(e)
         }), 500
 
-@app.route("/recommendation/<recommendation_id>", methods=["GET"])
-@token_required
-def get_recommendation_by_id(current_user, recommendation_id):
+@app.route("/recommendation_data/<recommendation_id>", methods=["GET"])
+def get_recommendation_data(recommendation_id):
+    """Get recommendation data without requiring authentication (for debugging)"""
     try:
-        # Get the specific recommendation
-        response = supabase.table('card_recommendations') \
-            .select('*') \
-            .eq('id', recommendation_id) \
-            .eq('user_id', current_user['id']) \
-            .limit(1) \
-            .execute()
+        # Use admin_supabase to bypass authentication
+        if admin_supabase:
+            response = admin_supabase.table('card_recommendations') \
+                .select('analysis_data') \
+                .eq('id', recommendation_id) \
+                .limit(1) \
+                .execute()
+        else:
+            # Fallback to regular client
+            response = supabase.table('card_recommendations') \
+                .select('analysis_data') \
+                .eq('id', recommendation_id) \
+                .limit(1) \
+                .execute()
         
-        if response.data:
+        if response.data and len(response.data) > 0:
             return jsonify({
                 "success": True,
                 "recommendation": response.data[0]['analysis_data']
@@ -1576,10 +1589,10 @@ def get_recommendation_by_id(current_user, recommendation_id):
         else:
             return jsonify({
                 "success": False,
-                "error": "Recommendation not found"
+                "error": "Recommendation data not found"
             }), 404
     except Exception as e:
-        app.logger.error(f"Error retrieving recommendation: {str(e)}", exc_info=True)
+        app.logger.error(f"Error retrieving recommendation data: {str(e)}")
         return jsonify({
             "success": False,
             "error": str(e)
@@ -1592,6 +1605,7 @@ def get_plans():
         'success': True,
         'plans': PAYMENT_PLANS
     })
+
 
 @app.route('/create-checkout-session', methods=['POST'])
 @token_required
