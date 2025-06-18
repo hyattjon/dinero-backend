@@ -1,78 +1,55 @@
-2025-06-17 10:05:33,168 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc0ZTA2ZTUyLTYxNjQtNDhjNi1hN2RmLWQwYTk4N2EzOGYzOSIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA3NzY5MDB9.hz1pv2vzvlnQAPcWNXx7zG-EgwfwHZ7x2I-CNZl2Cfo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:700]
-2025-06-17 10:05:33,172 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:711]
-2025-06-17 10:05:33,172 INFO: Decoded token: {'id': '74e06e52-6164-48c6-a7df-d0a987a38f39', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750776900} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
-2025-06-17 10:05:33,183 INFO: Stored recommendations found: 1 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1499]
-2025-06-17 10:05:33,188 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc0ZTA2ZTUyLTYxNjQtNDhjNi1hN2RmLWQwYTk4N2EzOGYzOSIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA3NzY5MDB9.hz1pv2vzvlnQAPcWNXx7zG-EgwfwHZ7x2I-CNZl2Cfo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:700]
-2025-06-17 10:05:33,188 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:711]
-2025-06-17 10:05:33,188 INFO: Decoded token: {'id': '74e06e52-6164-48c6-a7df-d0a987a38f39', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750776900} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
-2025-06-17 10:05:33,188 INFO: Using admin client to fetch stored recommendations [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1481]
-2025-06-17 10:05:33,427 INFO: Stored recommendations found: 1 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1499]
-2025-06-17 10:06:19,353 ERROR: Unhandled exception [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1967]
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 915, in full_dispatch_request
-    rv = self.preprocess_request()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 1291, in preprocess_request
-    rv = self.ensure_sync(before_func)()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_limiter/extension.py", line 1180, in _check_request_limit
-    raise e
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_limiter/extension.py", line 1177, in _check_request_limit
-    self.__evaluate_limits(endpoint, all_limits)
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_limiter/extension.py", line 1161, in __evaluate_limits
-    raise RateLimitExceeded(
-flask_limiter.errors.RateLimitExceeded: 429 Too Many Requests: 50 per 1 hour
-2025-06-17 10:06:19,356 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc0ZTA2ZTUyLTYxNjQtNDhjNi1hN2RmLWQwYTk4N2EzOGYzOSIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA3NzY5MDB9.hz1pv2vzvlnQAPcWNXx7zG-EgwfwHZ7x2I-CNZl2Cfo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:700]
-2025-06-17 10:06:19,363 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:711]
-2025-06-17 10:06:19,363 INFO: Decoded token: {'id': '74e06e52-6164-48c6-a7df-d0a987a38f39', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750776900} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
-2025-06-17 10:06:19,366 ERROR: Unhandled exception [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1967]
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 915, in full_dispatch_request
-    rv = self.preprocess_request()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 1291, in preprocess_request
-    rv = self.ensure_sync(before_func)()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_limiter/extension.py", line 1180, in _check_request_limit
-    raise e
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_limiter/extension.py", line 1177, in _check_request_limit
-    self.__evaluate_limits(endpoint, all_limits)
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_limiter/extension.py", line 1161, in __evaluate_limits
-    raise RateLimitExceeded(
-flask_limiter.errors.RateLimitExceeded: 429 Too Many Requests: 50 per 1 hour
-2025-06-17 10:06:19,718 ERROR: Unhandled exception [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1967]
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 915, in full_dispatch_request
-    rv = self.preprocess_request()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask/app.py", line 1291, in preprocess_request
-    rv = self.ensure_sync(before_func)()
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_limiter/extension.py", line 1180, in _check_request_limit
-    raise e
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_limiter/extension.py", line 1177, in _check_request_limit
-    self.__evaluate_limits(endpoint, all_limits)
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/flask_limiter/extension.py", line 1161, in __evaluate_limits
-    raise RateLimitExceeded(
-flask_limiter.errors.RateLimitExceeded: 429 Too Many Requests: 50 per 1 hour
-2025-06-17 10:06:28,172 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc0ZTA2ZTUyLTYxNjQtNDhjNi1hN2RmLWQwYTk4N2EzOGYzOSIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA3NzY5MDB9.hz1pv2vzvlnQAPcWNXx7zG-EgwfwHZ7x2I-CNZl2Cfo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:700]
-2025-06-17 10:06:28,173 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:711]
-2025-06-17 10:06:28,173 INFO: Decoded token: {'id': '74e06e52-6164-48c6-a7df-d0a987a38f39', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750776900} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
-2025-06-17 10:06:28,173 INFO: Using admin client to fetch recommendation history [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1531]
-2025-06-17 10:06:28,482 INFO: History data count: 2 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1546]
-2025-06-17 10:06:28,487 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc0ZTA2ZTUyLTYxNjQtNDhjNi1hN2RmLWQwYTk4N2EzOGYzOSIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA3NzY5MDB9.hz1pv2vzvlnQAPcWNXx7zG-EgwfwHZ7x2I-CNZl2Cfo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:700]
-2025-06-17 10:06:28,487 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:711]
-2025-06-17 10:06:28,487 INFO: Decoded token: {'id': '74e06e52-6164-48c6-a7df-d0a987a38f39', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750776900} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
-2025-06-17 10:06:28,488 INFO: Using admin client to fetch recommendation history [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1531]
-2025-06-17 10:06:28,661 INFO: History data count: 2 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1546]
-2025-06-17 10:06:32,802 INFO: Application shutdown [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:2106]
-2025-06-17 10:28:23,145 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:263]
-2025-06-17 10:28:23,148 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:800]
-2025-06-17 10:28:23,974 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:263]
-2025-06-17 10:28:23,978 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:800]
-2025-06-17 10:28:25,583 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc0ZTA2ZTUyLTYxNjQtNDhjNi1hN2RmLWQwYTk4N2EzOGYzOSIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA3NzY5MDB9.hz1pv2vzvlnQAPcWNXx7zG-EgwfwHZ7x2I-CNZl2Cfo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:700]
-2025-06-17 10:28:25,585 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:711]
-2025-06-17 10:28:25,587 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc0ZTA2ZTUyLTYxNjQtNDhjNi1hN2RmLWQwYTk4N2EzOGYzOSIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA3NzY5MDB9.hz1pv2vzvlnQAPcWNXx7zG-EgwfwHZ7x2I-CNZl2Cfo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:700]
-2025-06-17 10:28:25,588 INFO: Decoded token: {'id': '74e06e52-6164-48c6-a7df-d0a987a38f39', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750776900} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
-2025-06-17 10:28:25,588 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:711]
-2025-06-17 10:28:25,589 INFO: Using admin client to fetch stored recommendations [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1481]
-2025-06-17 10:28:25,589 INFO: Decoded token: {'id': '74e06e52-6164-48c6-a7df-d0a987a38f39', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750776900} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
-2025-06-17 10:28:26,018 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc0ZTA2ZTUyLTYxNjQtNDhjNi1hN2RmLWQwYTk4N2EzOGYzOSIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA3NzY5MDB9.hz1pv2vzvlnQAPcWNXx7zG-EgwfwHZ7x2I-CNZl2Cfo [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:700]
-2025-06-17 10:28:26,018 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:711]
-2025-06-17 10:28:26,018 INFO: Decoded token: {'id': '74e06e52-6164-48c6-a7df-d0a987a38f39', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750776900} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
-2025-06-17 10:28:26,059 INFO: Stored recommendations found: 1 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1499]
-2025-06-17 10:28:35,969 INFO: Application shutdown [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:2106]
+2025-06-17 17:09:25,117 INFO: Application shutdown [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:2106]
+2025-06-17 20:18:59,746 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:263]
+2025-06-17 20:18:59,750 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:800]
+2025-06-17 20:19:00,619 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:263]
+2025-06-17 20:19:00,622 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:800]
+2025-06-18 07:41:29,941 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:263]
+2025-06-18 07:41:29,944 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:800]
+2025-06-18 07:41:30,712 INFO: Application startup [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:263]
+2025-06-18 07:41:30,715 INFO: Admin Supabase client initialized successfully [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:800]
+2025-06-18 08:01:33,146 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA4NTY0OTN9.qIiZPIA1BCTmMB0j9HZm7s3rlVK2iTsc2vJ-c-qLAFc [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:700]
+2025-06-18 08:01:33,149 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA4NTY0OTN9.qIiZPIA1BCTmMB0j9HZm7s3rlVK2iTsc2vJ-c-qLAFc [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:700]
+2025-06-18 08:01:33,149 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:711]
+2025-06-18 08:01:33,150 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:711]
+2025-06-18 08:01:33,150 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750856493} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
+2025-06-18 08:01:33,150 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750856493} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
+2025-06-18 08:01:33,152 INFO: Using admin client to fetch stored recommendations [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1481]
+2025-06-18 08:01:33,359 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA4NTY0OTN9.qIiZPIA1BCTmMB0j9HZm7s3rlVK2iTsc2vJ-c-qLAFc [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:700]
+2025-06-18 08:01:33,359 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:711]
+2025-06-18 08:01:33,360 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750856493} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
+2025-06-18 08:01:33,722 INFO: Stored recommendations found: 0 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1499]
+2025-06-18 08:01:33,725 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA4NTY0OTN9.qIiZPIA1BCTmMB0j9HZm7s3rlVK2iTsc2vJ-c-qLAFc [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:700]
+2025-06-18 08:01:33,726 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:711]
+2025-06-18 08:01:33,726 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750856493} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
+2025-06-18 08:01:33,726 INFO: Using admin client to fetch stored recommendations [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1481]
+2025-06-18 08:01:34,082 INFO: Stored recommendations found: 0 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1499]
+2025-06-18 08:01:36,262 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA4NTY0OTN9.qIiZPIA1BCTmMB0j9HZm7s3rlVK2iTsc2vJ-c-qLAFc [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:700]
+2025-06-18 08:01:36,262 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:711]
+2025-06-18 08:01:36,262 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750856493} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
+2025-06-18 08:01:36,262 INFO: Creating link token for user eea599b4-887e-45ce-aaf4-74904c25b952 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1102]
+2025-06-18 08:01:36,262 INFO: Plaid link token request: {'user': {'client_user_id': 'eea599b4-887e-45ce-aaf4-74904c25b952'}, 'client_name': 'Card Matcher', 'products': ['transactions'], 'language': 'en', 'country_codes': ['US']} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1122]
+2025-06-18 08:01:36,870 INFO: Successfully created link token [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1128]
+2025-06-18 08:05:10,007 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA4NTY0OTN9.qIiZPIA1BCTmMB0j9HZm7s3rlVK2iTsc2vJ-c-qLAFc [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:700]
+2025-06-18 08:05:10,008 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA4NTY0OTN9.qIiZPIA1BCTmMB0j9HZm7s3rlVK2iTsc2vJ-c-qLAFc [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:700]
+2025-06-18 08:05:10,008 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:711]
+2025-06-18 08:05:10,008 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:711]
+2025-06-18 08:05:10,008 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750856493} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
+2025-06-18 08:05:10,008 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750856493} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
+2025-06-18 08:05:10,008 INFO: Using admin client to fetch stored recommendations [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1481]
+2025-06-18 08:05:10,706 INFO: Stored recommendations found: 0 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1499]
+2025-06-18 08:05:10,712 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA4NTY0OTN9.qIiZPIA1BCTmMB0j9HZm7s3rlVK2iTsc2vJ-c-qLAFc [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:700]
+2025-06-18 08:05:10,712 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:711]
+2025-06-18 08:05:10,712 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750856493} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
+2025-06-18 08:05:10,712 INFO: Using admin client to fetch stored recommendations [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1481]
+2025-06-18 08:05:10,778 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA4NTY0OTN9.qIiZPIA1BCTmMB0j9HZm7s3rlVK2iTsc2vJ-c-qLAFc [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:700]
+2025-06-18 08:05:10,778 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:711]
+2025-06-18 08:05:10,779 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750856493} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
+2025-06-18 08:05:10,906 INFO: Stored recommendations found: 0 [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1499]
+2025-06-18 08:33:47,392 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA4NTg0Mjd9.seCMyKcVMm7pRMMRyALycdUkndFvgRTW8qffzRNaDVc [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:700]
+2025-06-18 08:33:47,393 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA4NTg0Mjd9.seCMyKcVMm7pRMMRyALycdUkndFvgRTW8qffzRNaDVc [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:700]
+2025-06-18 08:33:47,393 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:711]
+2025-06-18 08:33:47,393 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:711]
+2025-06-18 08:33:47,394 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750858427} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
+2025-06-18 08:33:47,394 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750858427} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
+2025-06-18 08:33:47,394 INFO: Using admin client to fetch stored recommendations [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1481]
+2025-06-18 08:54:24,458 INFO: Application shutdown [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:2106]
