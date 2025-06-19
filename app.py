@@ -1670,32 +1670,6 @@ def create_checkout_session(current_user):
         app.logger.error(f"Error creating checkout session: {str(e)}", exc_info=True)
         return jsonify({'error': "An error occurred processing your payment. Please try again."}), 500
 
-@app.route('/customer-portal', methods=['POST'])
-@token_required
-def customer_portal(current_user):
-    # Add CSRF validation manually at the start
-    csrf.protect()  # Call it as a function here
-    
-    try:
-        # Get customer ID
-        user_data = supabase.table('users').select('stripe_customer_id').eq('id', current_user['id']).execute()
-        
-        if not user_data.data or not user_data.data[0].get('stripe_customer_id'):
-            return jsonify({'error': 'No subscription found'}), 404
-            
-        customer_id = user_data.data[0]['stripe_customer_id']
-        
-        # Create portal session
-        session = stripe.billing_portal.Session.create(
-            customer=customer_id,
-            return_url=request.headers.get('Origin', '') + '/dashboard.html',
-        )
-        
-        return jsonify({'success': True, 'url': session.url})
-        
-    except Exception as e:
-        app.logger.error(f"Error creating portal session: {str(e)}")
-        return jsonify({'error': str(e)}), 500
 
 @app.route('/webhook', methods=['POST'])
 def stripe_webhook():
@@ -1881,6 +1855,8 @@ def handle_payment_completed(session):
     """Handle one-time payment checkout session completion"""
     # This is your existing record_payment logic
     record_payment(session)
+
+
 
 @app.route('/verify-session', methods=['GET'])
 @token_required
