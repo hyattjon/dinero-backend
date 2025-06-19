@@ -149,19 +149,11 @@ missing_vars = [var for var, value in required_env_vars.items() if not value]
 if missing_vars:
     raise RuntimeError(f"Missing required environment variables: {', '.join(missing_vars)}")
 
-# Initialize clients
-# Configure Plaid client
-configuration = plaid.Configuration(
-    host=plaid.Environment.Sandbox,
-    api_key={
-        'clientId': CONFIG['PLAID_CLIENT_ID'],
-        'secret': CONFIG['PLAID_SECRET'],
-        'plaidVersion': '2020-09-14'  # Add API version
-    }
-)
+missing_vars = [var for var, value in required_env_vars.items() if not value]
+if missing_vars:
+    raise RuntimeError(f"Missing required environment variables: {', '.join(missing_vars)}")
 
-api_client = plaid.ApiClient(configuration)
-client = plaid_api.PlaidApi(api_client)
+
 
 # Initialize Supabase client
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -192,6 +184,7 @@ ALLOWED_ORIGINS = [
     "https://dinero-frontend.herokuapp.com",
     "https://dinero-backend-deeac4fe8d4e.herokuapp.com",
     "https://dinero-frontend-react.herokuapp.com",  # Add your new React frontend URL
+    "https://dinero-frontend-react-c6eef33714a0.herokuapp.com",
     "http://127.0.0.1:5173"
 ]
 
@@ -288,6 +281,29 @@ def fetch_credit_cards():
     if resp.ok:
         return resp.json()
     return []
+
+plaid_env = CONFIG['PLAID_ENV'].lower()
+if plaid_env == 'sandbox':
+    plaid_host = plaid.Environment.Sandbox
+elif plaid_env == 'development':
+    plaid_host = plaid.Environment.Development
+elif plaid_env == 'production':
+    plaid_host = plaid.Environment.Production
+else:
+    plaid_host = plaid.Environment.Sandbox
+    app.logger.warning(f"Unknown Plaid environment: {plaid_env}, defaulting to Sandbox")
+
+configuration = plaid.Configuration(
+    host=plaid_host,
+    api_key={
+        'clientId': CONFIG['PLAID_CLIENT_ID'],
+        'secret': CONFIG['PLAID_SECRET'],
+        'plaidVersion': '2020-09-14'
+    }
+)
+
+api_client = plaid.ApiClient(configuration)
+client = plaid_api.PlaidApi(api_client)
 
 def fetch_plaid_transactions(public_token):
     try:
