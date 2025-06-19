@@ -1613,7 +1613,7 @@ def get_plans():
 @token_required
 @csrf.exempt
 def create_checkout_session(current_user):
-    """Create a Stripe checkout session with idempotency key for safety"""
+    """Create a Stripe checkout session for subscription management"""
     try:
         data = request.get_json()
         plan_id = data.get('plan_id')
@@ -1626,62 +1626,48 @@ def create_checkout_session(current_user):
         if not STRIPE_SECRET_KEY:
             return jsonify({'error': 'Stripe is not configured'}), 500
 
-        # Generate a unique idempotency key based on user and plan
-        idempotency_key = f"{current_user['id']}_{plan_id}_{datetime.datetime.now().strftime('%Y%m%d')}"
-        
-        # Get customer ID or create one with idempotency
+        # Get or create customer
         user_data = supabase.table('users').select('stripe_customer_id').eq('id', current_user['id']).execute()
         
         customer_id = None
-        customer_exists_in_stripe = False
-        
         if user_data.data and user_data.data[0].get('stripe_customer_id'):
-            stored_customer_id = user_data.data[0]['stripe_customer_id']
-            
-            # Check if the customer still exists in Stripe
             try:
-                stripe.Customer.retrieve(stored_customer_id)
-                customer_id = stored_customer_id
-                customer_exists_in_stripe = True
-            except stripe.error.InvalidRequestError as e:
-                app.logger.warning(f"Customer {stored_customer_id} not found in Stripe: {str(e)}")
-        
-        # Create a new customer if needed (with idempotency)
-        if not customer_exists_in_stripe:
+                customer = stripe.Customer.retrieve(user_data.data[0]['stripe_customer_id'])
+                customer_id = customer.id
+            except:
+                # Customer doesn't exist in Stripe, create a new one
+                pass
+                
+        if not customer_id:
             customer = stripe.Customer.create(
                 email=current_user.get('email'),
                 name=current_user.get('name', 'Card Matcher User'),
-                metadata={'user_id': current_user['id']},
-                idempotency_key=f"customer_{current_user['id']}"  # Prevent duplicate customer creation
+                metadata={'user_id': current_user['id']}
             )
             customer_id = customer.id
-            
             supabase.table('users').update({'stripe_customer_id': customer_id}).eq('id', current_user['id']).execute()
-            app.logger.info(f"Created new Stripe customer {customer_id} for user {current_user['id']}")
-
-        # Create checkout session with idempotency key
-        checkout_session = stripe.checkout.Session.create(
+        
+        # Create checkout session with subscription
+        session = stripe.checkout.Session.create(
             customer=customer_id,
             payment_method_types=['card'],
             line_items=[{
                 'price': plan['stripe_price_id'],
                 'quantity': 1,
             }],
-            mode='payment',
-            success_url=request.headers.get('Origin', '') + '/payment-success.html?payment=success&plan=' + plan_id,
-            cancel_url=request.headers.get('Origin', '') + '/pricing.html?payment=canceled',
+            mode='subscription',  # Change from 'payment' to 'subscription'
+            success_url=request.headers.get('Origin', '') + '/payment-success?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url=request.headers.get('Origin', '') + '/pricing?canceled=true',
             metadata={
                 'user_id': current_user['id'],
                 'plan_id': plan_id
-            },
-            idempotency_key=idempotency_key  # Prevents accidental duplicate charges
+            }
         )
         
-        return jsonify({'success': True, 'session_id': checkout_session.id})
+        return jsonify({'success': True, 'session_id': session.id})
         
     except Exception as e:
         app.logger.error(f"Error creating checkout session: {str(e)}", exc_info=True)
-        # Return generic error message instead of exposing details
         return jsonify({'error': "An error occurred processing your payment. Please try again."}), 500
 
 @app.route('/customer-portal', methods=['POST'])
@@ -1713,7 +1699,7 @@ def customer_portal(current_user):
 
 @app.route('/webhook', methods=['POST'])
 def stripe_webhook():
-    """Handle Stripe webhooks for one-time payments"""
+    """Handle Stripe webhooks for subscription updates"""
     payload = request.data
     sig_header = request.headers.get('Stripe-Signature')
     
@@ -1733,18 +1719,26 @@ def stripe_webhook():
             event_id=event['id']
         )
         
-        # Handle the event
+        # Handle subscription events
         if event['type'] == 'checkout.session.completed':
             session = event['data']['object']
             
-            # Only handle payment mode sessions
-            if session.get('mode') == 'payment':
-                record_payment(session)
+            if session.get('mode') == 'subscription':
+                handle_subscription_created(session)
+            elif session.get('mode') == 'payment':
+                handle_payment_completed(session)
+                
+        elif event['type'] == 'customer.subscription.updated':
+            subscription = event['data']['object']
+            handle_subscription_updated(subscription)
+            
+        elif event['type'] == 'customer.subscription.deleted':
+            subscription = event['data']['object']
+            handle_subscription_canceled(subscription)
                 
         return jsonify({'status': 'success'})
         
     except stripe.error.SignatureVerificationError as e:
-        # This is a specific error we want to log differently
         structured_logger.error(
             "Webhook signature verification failed",
             error=str(e)
@@ -1759,6 +1753,89 @@ def stripe_webhook():
             traceback=traceback.format_exc()
         )
         return jsonify({'error': "Webhook processing failed"}), 400
+
+def handle_subscription_created(session):
+    """Process a new subscription"""
+    # Get user ID from metadata
+    user_id = session.get('metadata', {}).get('user_id')
+    plan_id = session.get('metadata', {}).get('plan_id')
+    subscription_id = session.get('subscription')
+    
+    if not user_id or not subscription_id:
+        app.logger.error("Missing user_id or subscription_id in session")
+        return
+        
+    # Get subscription details
+    subscription = stripe.Subscription.retrieve(subscription_id)
+    
+    # Update user record
+    supabase.table('users').update({
+        'subscription_id': subscription_id,
+        'subscription_tier': plan_id,
+        'subscription_status': subscription.status,
+        'subscription_current_period_end': datetime.datetime.fromtimestamp(subscription.current_period_end).isoformat()
+    }).eq('id', user_id).execute()
+    
+    app.logger.info(f"Subscription created for user {user_id}: {subscription_id}")
+
+def handle_subscription_updated(subscription):
+    """Process a subscription update"""
+    # Find user by customer ID
+    customer_id = subscription.get('customer')
+    
+    user_data = supabase.table('users').select('id').eq('stripe_customer_id', customer_id).execute()
+    
+    if not user_data.data:
+        app.logger.error(f"No user found for customer {customer_id}")
+        return
+        
+    user_id = user_data.data[0]['id']
+    
+    # Get current plan from subscription items
+    items = subscription.get('items', {}).get('data', [])
+    if not items:
+        app.logger.error("No items in subscription")
+        return
+        
+    price_id = items[0].get('price', {}).get('id')
+    
+    # Map price_id back to plan_id
+    plan_id = 'free'
+    for p_id, plan in PAYMENT_PLANS.items():
+        if plan.get('stripe_price_id') == price_id:
+            plan_id = p_id
+            break
+    
+    # Update user record
+    supabase.table('users').update({
+        'subscription_status': subscription.status,
+        'subscription_tier': plan_id,
+        'subscription_current_period_end': datetime.datetime.fromtimestamp(subscription.current_period_end).isoformat()
+    }).eq('id', user_id).execute()
+    
+    app.logger.info(f"Subscription updated for user {user_id}: {subscription.id}, status: {subscription.status}")
+
+def handle_subscription_canceled(subscription):
+    """Process a subscription cancellation"""
+    # Find user by customer ID
+    customer_id = subscription.get('customer')
+    
+    user_data = supabase.table('users').select('id').eq('stripe_customer_id', customer_id).execute()
+    
+    if not user_data.data:
+        app.logger.error(f"No user found for customer {customer_id}")
+        return
+        
+    user_id = user_data.data[0]['id']
+    
+    # Update user record
+    supabase.table('users').update({
+        'subscription_status': 'canceled',
+        'subscription_tier': 'free'
+    }).eq('id', user_id).execute()
+    
+    app.logger.info(f"Subscription canceled for user {user_id}: {subscription.id}")
+
 def record_payment(session):
     """Record successful one-time payment"""
     # Get data from session
@@ -1798,6 +1875,73 @@ def record_payment(session):
         
     except Exception as e:
         app.logger.error(f"Error recording payment: {str(e)}")
+
+
+def handle_payment_completed(session):
+    """Handle one-time payment checkout session completion"""
+    # This is your existing record_payment logic
+    record_payment(session)
+
+@app.route('/verify-session', methods=['GET'])
+@token_required
+def verify_session(current_user):
+    """Verify a checkout session after redirect"""
+    try:
+        session_id = request.args.get('session_id')
+        if not session_id:
+            return jsonify({'success': False, 'error': 'No session ID provided'}), 400
+            
+        # Retrieve the session from Stripe
+        session = stripe.checkout.Session.retrieve(session_id)
+        
+        # Check if the session belongs to this user
+        customer_id = session.get('customer')
+        user_data = supabase.table('users').select('stripe_customer_id').eq('id', current_user['id']).execute()
+        
+        if not user_data.data or user_data.data[0].get('stripe_customer_id') != customer_id:
+            return jsonify({'success': False, 'error': 'Session does not belong to this user'}), 403
+            
+        # Check if the session was completed
+        if session.get('payment_status') != 'paid' and session.get('status') != 'complete':
+            return jsonify({'success': False, 'error': 'Payment not completed'}), 400
+            
+        return jsonify({
+            'success': True,
+            'session': {
+                'id': session.id,
+                'customer': customer_id,
+                'payment_status': session.get('payment_status'),
+                'subscription': session.get('subscription')
+            }
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Error verifying session: {str(e)}")
+        return jsonify({'success': False, 'error': 'Failed to verify session'}), 500
+
+@app.route('/customer-portal', methods=['POST'])
+@token_required
+@csrf.exempt
+def customer_portal(current_user):
+    """Create a Stripe Customer Portal session for subscription management"""
+    try:
+        user_data = supabase.table('users').select('stripe_customer_id').eq('id', current_user['id']).execute()
+        
+        if not user_data.data or not user_data.data[0].get('stripe_customer_id'):
+            return jsonify({'success': False, 'error': 'No active subscription found'}), 404
+            
+        customer_id = user_data.data[0]['stripe_customer_id']
+        
+        session = stripe.billing_portal.Session.create(
+            customer=customer_id,
+            return_url=request.headers.get('Origin', '') + '/dashboard',
+        )
+        
+        return jsonify({'success': True, 'url': session.url})
+        
+    except Exception as e:
+        app.logger.error(f"Error creating portal session: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/subscription', methods=['GET'])
 @token_required
