@@ -1113,6 +1113,7 @@ def google_auth():
 
 @app.route("/create_link_token", methods=["POST"])
 @token_required
+@csrf.exempt
 def create_link_token(current_user):
     try:
         app.logger.info(f"Creating link token for user {current_user['id']}")
@@ -1345,6 +1346,7 @@ def compare_cards():
 @app.route("/fetch_all_card_rewards", methods=["GET"])
 @limiter.limit("5 per minute")
 @token_required
+@csrf.exempt
 def fetch_all_card_rewards(current_user):
     """Fetch Plaid reward details and calculate potential rewards for each card"""
     try:
