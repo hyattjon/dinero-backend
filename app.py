@@ -1038,6 +1038,15 @@ def google_auth():
                 
                 user_id = auth_user.user.id
                 
+                # Auto-confirm the email using admin API
+                if admin_supabase:
+                    # Immediately confirm email to prevent verification email
+                    admin_supabase.auth.admin.update_user_by_id(
+                        user_id,
+                        {"email_confirm": True}
+                    )
+                    app.logger.info(f"Auto-confirmed email for Google user: {email}")
+
                 # Store user data in 'users' table
                 supabase.table('users').insert({
                     "id": user_id,
