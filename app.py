@@ -70,9 +70,6 @@ SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
 JWT_SECRET = os.environ.get('JWT_SECRET', secrets.token_urlsafe(32))
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
 
-# Add with other configuration
-
-
 # Stripe configuration
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '')
 STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY', '')
@@ -116,15 +113,12 @@ PAYMENT_PLANS = {
     }
 }
 
-
 # Check required variables
 required_vars = [
     'REWARDS_CC_API_KEY',
     'REWARDS_CC_API_HOST',
     'REWARDS_CC_BASE_URL'
 ]
-
-
 
 missing_vars = [var for var in required_vars if not os.getenv(var)]
 if missing_vars:
@@ -152,8 +146,6 @@ if missing_vars:
 missing_vars = [var for var, value in required_env_vars.items() if not value]
 if missing_vars:
     raise RuntimeError(f"Missing required environment variables: {', '.join(missing_vars)}")
-
-
 
 # Initialize Supabase client
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -241,8 +233,6 @@ structlog.configure(
 
 structured_logger = structlog.get_logger()
 
-
-# Setup error logging
 if not app.debug:
     if not os.path.exists('logs'):
         os.mkdir('logs')
@@ -706,7 +696,6 @@ def calculate_card_potential_rewards(transactions, card_data):
                           for k, v in running_totals.items() if k in category_rates}
     }
 
-# JWT Authentication decorator
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -773,12 +762,7 @@ def token_required(f):
     
     return decorated
 
-# Add this near your other app initializations
-# Find the CSRFProtect initialization and modify it:
-
 csrf = CSRFProtect(app)
-
-# Add this after the CSRF initialization:
 @app.after_request
 def set_csrf_cookie(response):
     response.set_cookie('csrf_token', generate_csrf(), 
@@ -809,7 +793,7 @@ def get_csrf_token():
 
 
 # Initialize service role client that bypasses RLS
-SUPABASE_SERVICE_ROLE = os.environ.get('SUPABASE_SERVICE_ROLE')  # Changed from SUPABASE_SERVICE_KEY
+SUPABASE_SERVICE_ROLE = os.environ.get('SUPABASE_SERVICE_ROLE')  
 admin_supabase = None
 if SUPABASE_SERVICE_ROLE:  # Changed variable name here too
     admin_supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE)  # And here
@@ -1924,7 +1908,6 @@ def detailed_health_check():
     
     return jsonify(health_data)
 
-# Add suspicious activity monitoring
 @app.before_request
 def monitor_suspicious_activity():
     """Monitor for suspicious activity in requests"""
@@ -2019,7 +2002,6 @@ def handle_exception(e):
             "error": "An unexpected error occurred. Our team has been notified."
         }), 500
 
-# Add this to your RegistrationSchema
 class RegistrationSchema(Schema):
     name = fields.Str(required=True, validate=validate.Length(min=2))
     email = fields.Email(required=True)
@@ -2080,8 +2062,6 @@ def save_payment_method(current_user):
     
     return jsonify({'success': True})
 
-# Add this near the end of your file, after all other routes
-
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def catch_all(path):
@@ -2090,8 +2070,6 @@ def catch_all(path):
     # If your React app is on a different domain (like Heroku), you don't need this
     app.logger.info(f"Catch-all route accessed: {path}")
     return jsonify({"message": "API endpoint not found"}), 404
-
-
 
 def rotate_api_keys():
     """Rotate API keys every 90 days"""
