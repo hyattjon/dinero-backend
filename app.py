@@ -1611,6 +1611,7 @@ def get_plans():
 
 @app.route('/create-checkout-session', methods=['POST'])
 @token_required
+@csrf.exempt
 def create_checkout_session(current_user):
     """Create a Stripe checkout session with idempotency key for safety"""
     try:
