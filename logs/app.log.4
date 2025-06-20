@@ -1,64 +1,20 @@
-2025-06-19 12:41:23,802 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA5NTkzMDJ9.Jh5WuqkxxZ1DkVFtRAtP9TS2rn4wdQU2l34zS1EYXyM [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:705]
-2025-06-19 12:41:23,805 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
-2025-06-19 12:41:23,806 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750959302} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:721]
-2025-06-19 12:41:24,285 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA5NTkzMDJ9.Jh5WuqkxxZ1DkVFtRAtP9TS2rn4wdQU2l34zS1EYXyM [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:705]
-2025-06-19 12:41:24,285 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
-2025-06-19 12:41:24,285 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750959302} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:721]
-2025-06-19 12:41:26,420 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA5NTkzMDJ9.Jh5WuqkxxZ1DkVFtRAtP9TS2rn4wdQU2l34zS1EYXyM [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:705]
-2025-06-19 12:41:26,420 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
-2025-06-19 12:41:26,420 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750959302} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:721]
-2025-06-19 12:41:28,334 ERROR: Error creating checkout session: Request req_5Zhvc9h54SUun3: No such price: 'price_1RbjrGFWOXyJupjeor70XQup' [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1670]
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/dinero-backend/app.py", line 1651, in create_checkout_session
-    session = stripe.checkout.Session.create(
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/stripe/checkout/_session.py", line 4932, in create
-    cls._static_request(
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/stripe/_api_resource.py", line 172, in _static_request
-    return _APIRequestor._global_instance().request(
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/stripe/_api_requestor.py", line 197, in request
-    resp = requestor._interpret_response(rbody, rcode, rheaders, api_mode)
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/stripe/_api_requestor.py", line 853, in _interpret_response
-    self.handle_error_response(
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/stripe/_api_requestor.py", line 336, in handle_error_response
-    raise err
-stripe._error.InvalidRequestError: Request req_5Zhvc9h54SUun3: No such price: 'price_1RbjrGFWOXyJupjeor70XQup'
-2025-06-19 12:42:23,579 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA5NTkzMDJ9.Jh5WuqkxxZ1DkVFtRAtP9TS2rn4wdQU2l34zS1EYXyM [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:705]
-2025-06-19 12:42:23,580 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
-2025-06-19 12:42:23,581 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750959302} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:721]
-2025-06-19 12:42:23,849 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA5NTkzMDJ9.Jh5WuqkxxZ1DkVFtRAtP9TS2rn4wdQU2l34zS1EYXyM [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:705]
-2025-06-19 12:42:23,850 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
-2025-06-19 12:42:23,850 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750959302} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:721]
-2025-06-19 12:42:23,956 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA5NTkzMDJ9.Jh5WuqkxxZ1DkVFtRAtP9TS2rn4wdQU2l34zS1EYXyM [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:705]
-2025-06-19 12:42:23,956 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
-2025-06-19 12:42:23,956 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750959302} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:721]
-2025-06-19 12:42:24,074 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA5NTkzMDJ9.Jh5WuqkxxZ1DkVFtRAtP9TS2rn4wdQU2l34zS1EYXyM [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:705]
-2025-06-19 12:42:24,074 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
-2025-06-19 12:42:24,075 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750959302} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:721]
-2025-06-19 12:42:26,809 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA5NTkzMDJ9.Jh5WuqkxxZ1DkVFtRAtP9TS2rn4wdQU2l34zS1EYXyM [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:705]
-2025-06-19 12:42:26,809 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
-2025-06-19 12:42:26,809 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750959302} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:721]
-2025-06-19 12:42:27,494 ERROR: Error creating checkout session: Request req_3Hbmx4bMSjyRt3: No such price: 'price_1RbjrGFWOXyJupjeor70XQup' [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:1670]
-Traceback (most recent call last):
-  File "/Users/jonathanhyatt/dinero/dinero-backend/app.py", line 1651, in create_checkout_session
-    session = stripe.checkout.Session.create(
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/stripe/checkout/_session.py", line 4932, in create
-    cls._static_request(
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/stripe/_api_resource.py", line 172, in _static_request
-    return _APIRequestor._global_instance().request(
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/stripe/_api_requestor.py", line 197, in request
-    resp = requestor._interpret_response(rbody, rcode, rheaders, api_mode)
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/stripe/_api_requestor.py", line 853, in _interpret_response
-    self.handle_error_response(
-  File "/Users/jonathanhyatt/dinero/.venv/lib/python3.9/site-packages/stripe/_api_requestor.py", line 336, in handle_error_response
-    raise err
-stripe._error.InvalidRequestError: Request req_3Hbmx4bMSjyRt3: No such price: 'price_1RbjrGFWOXyJupjeor70XQup'
-2025-06-19 12:47:38,694 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA5NTkzMDJ9.Jh5WuqkxxZ1DkVFtRAtP9TS2rn4wdQU2l34zS1EYXyM [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:705]
-2025-06-19 12:47:38,699 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
-2025-06-19 12:47:38,702 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750959302} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:721]
-2025-06-19 12:47:42,508 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA5NTkzMDJ9.Jh5WuqkxxZ1DkVFtRAtP9TS2rn4wdQU2l34zS1EYXyM [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:705]
-2025-06-19 12:47:42,509 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
-2025-06-19 12:47:42,509 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750959302} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:721]
-2025-06-19 12:47:42,962 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA5NTkzMDJ9.Jh5WuqkxxZ1DkVFtRAtP9TS2rn4wdQU2l34zS1EYXyM [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:705]
-2025-06-19 12:47:42,963 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
-2025-06-19 12:47:42,963 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750959302} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:721]
-2025-06-19 12:47:43,133 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA5NTkzMDJ9.Jh5WuqkxxZ1DkVFtRAtP9TS2rn4wdQU2l34zS1EYXyM [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:705]
+2025-06-19 14:08:35,177 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750959302} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:721]
+2025-06-19 14:08:35,351 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA5NTkzMDJ9.Jh5WuqkxxZ1DkVFtRAtP9TS2rn4wdQU2l34zS1EYXyM [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:705]
+2025-06-19 14:08:35,351 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
+2025-06-19 14:08:35,351 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750959302} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:721]
+2025-06-19 14:08:35,527 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA5NTkzMDJ9.Jh5WuqkxxZ1DkVFtRAtP9TS2rn4wdQU2l34zS1EYXyM [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:705]
+2025-06-19 14:08:35,527 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
+2025-06-19 14:08:35,527 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750959302} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:721]
+2025-06-19 15:51:49,276 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA5NTkzMDJ9.Jh5WuqkxxZ1DkVFtRAtP9TS2rn4wdQU2l34zS1EYXyM [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:705]
+2025-06-19 15:51:49,278 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
+2025-06-19 15:51:49,279 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750959302} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:721]
+2025-06-19 15:51:51,829 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA5NTkzMDJ9.Jh5WuqkxxZ1DkVFtRAtP9TS2rn4wdQU2l34zS1EYXyM [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:705]
+2025-06-19 15:51:51,829 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
+2025-06-19 15:51:51,830 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750959302} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:721]
+2025-06-19 15:51:51,955 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA5NTkzMDJ9.Jh5WuqkxxZ1DkVFtRAtP9TS2rn4wdQU2l34zS1EYXyM [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:705]
+2025-06-19 15:51:51,956 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
+2025-06-19 15:51:51,956 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750959302} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:721]
+2025-06-19 15:51:52,086 INFO: Auth header: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlYTU5OWI0LTg4N2UtNDVjZS1hYWY0LTc0OTA0YzI1Yjk1MiIsImVtYWlsIjoiaHlhdHQuam9uYXRoYW45OUBnbWFpbC5jb20iLCJleHAiOjE3NTA5NTkzMDJ9.Jh5WuqkxxZ1DkVFtRAtP9TS2rn4wdQU2l34zS1EYXyM [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:705]
+2025-06-19 15:51:52,087 INFO: Verifying token: eyJhbGciOi... [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:716]
+2025-06-19 15:51:52,087 INFO: Decoded token: {'id': 'eea599b4-887e-45ce-aaf4-74904c25b952', 'email': 'hyatt.jonathan99@gmail.com', 'exp': 1750959302} [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:721]
+2025-06-19 15:54:06,809 INFO: Application shutdown [in /Users/jonathanhyatt/dinero/dinero-backend/app.py:2237]

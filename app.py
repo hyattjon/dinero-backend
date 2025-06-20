@@ -1,221 +1,48 @@
-from flask import Flask, request, jsonify
+import datetime
+import json
+import logging
+import os
+import secrets
+import time
+import traceback
+import uuid
+from functools import wraps
+from html import escape
+from logging.handlers import RotatingFileHandler
+
+# Third-party imports - alphabetized and grouped by domain
+import httpx
+import jwt
+import pandas as pd
+import plaid
+import pyotp
+import requests
+import stripe
+import structlog
+import random
+from cryptography.fernet import Fernet
+from dotenv import load_dotenv
+from flask import Flask, jsonify, make_response, request
 from flask_cors import CORS
+from flask_jwt_extended import (JWTManager, create_access_token,
+                               create_refresh_token, get_jwt_identity,
+                               jwt_required)
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from flask import make_response
-import redis
-import plaid
-from plaid.api import plaid_api
-from dotenv import load_dotenv
 from flask_talisman import Talisman
 from flask_wtf.csrf import CSRFProtect, generate_csrf
-import os
-import pandas as pd
-import requests
-import datetime
-import secrets
-import logging
-from logging.handlers import RotatingFileHandler
-import json
-import httpx
-import asyncio
-from typing import List, Dict, Any
-import random
-import jwt
-from werkzeug.security import generate_password_hash, check_password_hash
-from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
-from functools import wraps
-from supabase import create_client, Client
-import uuid
-import stripe
-from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, get_jwt_identity, jwt_required
-import structlog
-import traceback
-import sys
-from marshmallow import Schema, fields, validate, ValidationError
-from html import escape
-import pyotp
-from cryptography.fernet import Fernet
-import time
+from google.oauth2 import id_token
+from marshmallow import Schema, ValidationError, fields, validate
+from plaid.api import plaid_api
+from supabase import Client, create_client
+from werkzeug.security import check_password_hash, generate_password_hash
+from typing import Any, Dict, List
 
-# This works now again and again This is the pre-react version
-# Environment variables and configuration
+# Load environment variables
 load_dotenv()
 
-# Define configuration object for Plaid and other services
-CONFIG = {
-    'PLAID_CLIENT_ID': os.environ.get('PLAID_CLIENT_ID'),
-    'PLAID_SECRET': os.environ.get('PLAID_SECRET'),
-    'PLAID_ENV': os.environ.get('PLAID_ENV', 'sandbox'),
-    'PLAID_PRODUCTS': ['transactions'],
-    'PLAID_COUNTRY_CODES': ['US'],
-    'PLAID_WEBHOOK': os.environ.get('PLAID_WEBHOOK', ''),  # Optional webhook URL
-    'PLAID_REDIRECT_URI': os.environ.get('PLAID_REDIRECT_URI', ''),
-    'REWARDS_CC_API_KEY': os.environ.get('REWARDS_CC_API_KEY'),
-    'REWARDS_CC_API_HOST': os.environ.get('REWARDS_CC_API_HOST'),
-    'REWARDS_CC_BASE_URL': os.environ.get('REWARDS_CC_BASE_URL')
-}
-
-# RapidAPI configuration
-REWARDS_CC_API_KEY = os.environ.get('REWARDS_CC_API_KEY')
-REWARDS_CC_API_HOST = os.environ.get('REWARDS_CC_API_HOST')
-REWARDS_CC_BASE_URL = os.environ.get('REWARDS_CC_BASE_URL')
-
-# Supabase configuration
-SUPABASE_URL = os.environ.get('SUPABASE_URL')
-SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
-
-# JWT configuration
-JWT_SECRET = os.environ.get('JWT_SECRET', secrets.token_urlsafe(32))
-GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
-
-# Stripe configuration
-STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '')
-STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY', '')
-STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', '')
-STRIPE_PRICE_BASIC = os.environ.get('STRIPE_PRICE_BASIC', '')
-STRIPE_PRICE_PRO = os.environ.get('STRIPE_PRICE_PRO', '')
-
-# Define subscription plans
-PAYMENT_PLANS = {
-    'free': {
-        'name': 'Free',
-        'price': 0,
-        'features': [
-            'Basic card recommendations',
-            'Connect one bank account',
-            'View top 3 card matches'
-        ]
-    },
-    'basic': {
-        'name': 'Basic',
-        'price': 5,
-        'stripe_price_id': STRIPE_PRICE_BASIC if STRIPE_PRICE_BASIC else None,
-        'features': [
-            'All Free features',
-            'Connect multiple bank accounts',
-            'View all card recommendations',
-            'Detailed rewards analysis'
-        ]
-    },
-    'pro': {
-        'name': 'Pro',
-        'price': 20,
-        'stripe_price_id': STRIPE_PRICE_PRO if STRIPE_PRICE_PRO else None,
-        'features': [
-            'All Basic features',
-            'Custom card scoring',
-            'Advanced category analysis',
-            'Annual spending projections',
-            'Priority support'
-        ]
-    }
-}
-
-# Check required variables
-required_vars = [
-    'REWARDS_CC_API_KEY',
-    'REWARDS_CC_API_HOST',
-    'REWARDS_CC_BASE_URL'
-]
-
-missing_vars = [var for var in required_vars if not os.getenv(var)]
-if missing_vars:
-    print("ERROR: Missing variables:", missing_vars)
-    raise RuntimeError(f"Missing required environment variables: {', '.join(missing_vars)}")
-
-# Simple in-memory user storage (replace with database in production)
-users = {}
-
-# Validate required environment variables
-required_env_vars = {
-    'PLAID_CLIENT_ID': CONFIG['PLAID_CLIENT_ID'],
-    'PLAID_SECRET': CONFIG['PLAID_SECRET'],
-    'REWARDS_CC_API_KEY': REWARDS_CC_API_KEY,
-    'REWARDS_CC_API_HOST': REWARDS_CC_API_HOST,
-    'REWARDS_CC_BASE_URL': REWARDS_CC_BASE_URL,
-    'SUPABASE_URL': SUPABASE_URL,
-    'SUPABASE_KEY': SUPABASE_KEY
-}
-
-missing_vars = [var for var, value in required_env_vars.items() if not value]
-if missing_vars:
-    raise RuntimeError(f"Missing required environment variables: {', '.join(missing_vars)}")
-
-missing_vars = [var for var, value in required_env_vars.items() if not value]
-if missing_vars:
-    raise RuntimeError(f"Missing required environment variables: {', '.join(missing_vars)}")
-
-# Initialize Supabase client
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-# Initialize Stripe
-if STRIPE_SECRET_KEY:
-    stripe.api_key = STRIPE_SECRET_KEY
-else:
-    print("Stripe secret key not found. Stripe functionality will be disabled.")
-
-# Initialize Flask app and extensions
-app = Flask(__name__)
-
-# Set up CORS properly with specific origins
-app.config['CORS_HEADERS'] = 'Content-Type,Authorization'
-
-ALLOWED_ORIGINS = [
-    "http://localhost:3000", 
-    "http://127.0.0.1:3000",
-    "http://localhost:5173",  # Vite dev server port
-    "http://127.0.0.1:5173",  # Vite dev server alternative
-    "http://localhost:5001", 
-    "http://127.0.0.1:5001",
-    "https://localhost:5000",
-    "http://127.0.0.1:5000",
-    "https://cardmatcher.net", 
-    "https://www.cardmatcher.net",
-    "https://dinero-frontend.herokuapp.com",
-    "https://dinero-backend-deeac4fe8d4e.herokuapp.com",
-    "https://dinero-frontend-react.herokuapp.com",  # Add your new React frontend URL
-    "https://dinero-frontend-react-c6eef33714a0.herokuapp.com",
-    "http://127.0.0.1:5173"
-]
-
-CORS(app, 
-     resources={r"/*": {
-         "origins": ALLOWED_ORIGINS,
-         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-         "allow_headers": ["Content-Type", "Authorization", "X-CSRF-Token", "x-csrf-token"],
-         "expose_headers": ["X-CSRF-Token", "x-csrf-token"]
-     }},
-     supports_credentials=True)
-
-# Disable SSL requirement for local development
-app.config['TALISMAN_ENABLED'] = False
-
-# Initialize Stripe client if key exists
-if STRIPE_SECRET_KEY:
-    stripe.api_key = STRIPE_SECRET_KEY
-else:
-    app.logger.warning("Stripe secret key not found. Stripe functionality will be disabled.")
-
-# Secure configurations
-app.config.update(
-    SECRET_KEY=os.environ.get('FLASK_SECRET_KEY', secrets.token_urlsafe(32)),
-    SESSION_COOKIE_SECURE=True,
-    SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SAMESITE='Lax',
-)
-
-# Configure Redis and rate limiting
-redis_url = os.environ.get('UPSTASH_REDIS_URL', 'memory://')
-limiter = Limiter(
-    app=app,
-    key_func=get_remote_address,
-    storage_uri=redis_url,
-    storage_options={},
-    default_limits=["200 per day", "50 per hour"]
-)
-
+# Initialize logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -230,9 +57,194 @@ structlog.configure(
     context_class=dict,
     logger_factory=structlog.stdlib.LoggerFactory(),
 )
-
 structured_logger = structlog.get_logger()
 
+# Environment configuration - single source of truth
+class Config:
+    """Central configuration from environment variables with validation"""
+    
+    # API keys and credentials
+    PLAID_CLIENT_ID = os.environ.get('PLAID_CLIENT_ID')
+    PLAID_SECRET = os.environ.get('PLAID_SECRET')
+    PLAID_ENV = os.environ.get('PLAID_ENV', 'sandbox')
+    PLAID_WEBHOOK = os.environ.get('PLAID_WEBHOOK', '')
+    PLAID_REDIRECT_URI = os.environ.get('PLAID_REDIRECT_URI', '')
+    
+    REWARDS_CC_API_KEY = os.environ.get('REWARDS_CC_API_KEY')
+    REWARDS_CC_API_HOST = os.environ.get('REWARDS_CC_API_HOST')
+    REWARDS_CC_BASE_URL = os.environ.get('REWARDS_CC_BASE_URL')
+    
+    SUPABASE_URL = os.environ.get('SUPABASE_URL')
+    SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
+    SUPABASE_SERVICE_ROLE = os.environ.get('SUPABASE_SERVICE_ROLE')
+    
+    STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '')
+    STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY', '')
+    STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', '')
+    STRIPE_PRICE_BASIC = os.environ.get('STRIPE_PRICE_BASIC', '')
+    STRIPE_PRICE_PRO = os.environ.get('STRIPE_PRICE_PRO', '')
+    
+    JWT_SECRET = os.environ.get('JWT_SECRET', secrets.token_urlsafe(32))
+    GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
+    FLASK_SECRET_KEY = os.environ.get('FLASK_SECRET_KEY', secrets.token_urlsafe(32))
+    ENCRYPTION_KEY = os.environ.get('ENCRYPTION_KEY')
+    
+    # Redis configuration
+    REDIS_URL = os.environ.get('UPSTASH_REDIS_URL', 'memory://')
+    
+    # Constants
+    PLAID_PRODUCTS = ['transactions']
+    PLAID_COUNTRY_CODES = ['US']
+    
+    # CORS configuration
+    ALLOWED_ORIGINS = [
+        "http://localhost:3000", 
+        "http://127.0.0.1:3000",
+        "http://localhost:5173",  # Vite dev server port
+        "http://127.0.0.1:5173",  # Vite dev server alternative
+        "http://localhost:5001", 
+        "http://127.0.0.1:5001",
+        "https://localhost:5000",
+        "http://127.0.0.1:5000",
+        "https://cardmatcher.net", 
+        "https://www.cardmatcher.net",
+        "https://dinero-frontend.herokuapp.com",
+        "https://dinero-backend-deeac4fe8d4e.herokuapp.com",
+        "https://dinero-frontend-react.herokuapp.com",
+        "https://dinero-frontend-react-c6eef33714a0.herokuapp.com",
+    ]
+    
+    # Subscription plans
+    PAYMENT_PLANS = {
+        'free': {
+            'name': 'Free',
+            'price': 0,
+            'features': [
+                'Basic card recommendations',
+                'Connect one bank account',
+                'View top 3 card matches'
+            ]
+        },
+        'basic': {
+            'name': 'Basic',
+            'price': 5,
+            'stripe_price_id': STRIPE_PRICE_BASIC,
+            'features': [
+                'All Free features',
+                'Connect multiple bank accounts',
+                'View all card recommendations',
+                'Detailed rewards analysis'
+            ]
+        },
+        'pro': {
+            'name': 'Pro',
+            'price': 20,
+            'stripe_price_id': STRIPE_PRICE_PRO,
+            'features': [
+                'All Basic features',
+                'Custom card scoring',
+                'Advanced category analysis',
+                'Annual spending projections',
+                'Priority support'
+            ]
+        }
+    }
+    
+    @classmethod
+    def validate(cls):
+        """Validate required configuration"""
+        required_vars = [
+            'REWARDS_CC_API_KEY',
+            'REWARDS_CC_API_HOST',
+            'REWARDS_CC_BASE_URL',
+            'PLAID_CLIENT_ID',
+            'PLAID_SECRET',
+            'SUPABASE_URL',
+            'SUPABASE_KEY'
+        ]
+        
+        missing = [var for var in required_vars if not getattr(cls, var)]
+        if missing:
+            raise RuntimeError(f"Missing required environment variables: {', '.join(missing)}")
+        
+        return True
+
+# Validate configuration
+Config.validate()
+
+# Initialize Flask app
+app = Flask(__name__)
+app.config['SECRET_KEY'] = Config.FLASK_SECRET_KEY
+app.config['CORS_HEADERS'] = 'Content-Type,Authorization'
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['TALISMAN_ENABLED'] = False  # Disable for local development
+
+
+# Initialize extensions
+csrf = CSRFProtect(app)
+jwt_manager = JWTManager(app)
+
+# Set up CORS
+CORS(app, 
+     resources={r"/*": {
+         "origins": Config.ALLOWED_ORIGINS,
+         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+         "allow_headers": ["Content-Type", "Authorization", "X-CSRF-Token", "x-csrf-token"],
+         "expose_headers": ["X-CSRF-Token", "x-csrf-token"]
+     }},
+     supports_credentials=True)
+
+# Configure rate limiting
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    storage_uri=Config.REDIS_URL,
+    storage_options={},
+    default_limits=["200 per day", "50 per hour"]
+)
+
+# Initialize Supabase clients
+supabase: Client = create_client(Config.SUPABASE_URL, Config.SUPABASE_KEY)
+admin_supabase = None
+if Config.SUPABASE_SERVICE_ROLE:
+    admin_supabase = create_client(Config.SUPABASE_URL, Config.SUPABASE_SERVICE_ROLE)
+    app.logger.info("Admin Supabase client initialized successfully")
+else:
+    app.logger.warning("SUPABASE_SERVICE_ROLE not found, admin operations will be limited")
+
+# Initialize Stripe
+if Config.STRIPE_SECRET_KEY:
+    stripe.api_key = Config.STRIPE_SECRET_KEY
+    app.logger.info("Stripe initialized successfully")
+else:
+    app.logger.warning("Stripe secret key not found. Stripe functionality will be disabled.")
+
+# Configure Plaid
+plaid_env_mapping = {
+    'sandbox': 'https://sandbox.plaid.com',
+    'development': 'https://development.plaid.com',
+    'production': 'https://production.plaid.com'
+}
+
+plaid_environment = plaid_env_mapping.get(Config.PLAID_ENV.lower(), 'https://sandbox.plaid.com')
+if Config.PLAID_ENV.lower() not in plaid_env_mapping:
+    app.logger.warning(f"Unknown Plaid environment: {Config.PLAID_ENV}, defaulting to Sandbox")
+
+plaid_configuration = plaid.Configuration(
+    host=plaid_environment,  # Use the URL directly
+    api_key={
+        'clientId': Config.PLAID_CLIENT_ID,
+        'secret': Config.PLAID_SECRET,
+        'plaidVersion': '2020-09-14'
+    }
+)
+
+api_client = plaid.ApiClient(plaid_configuration)
+plaid_client = plaid_api.PlaidApi(api_client)
+
+# Set up file logging
 if not app.debug:
     if not os.path.exists('logs'):
         os.mkdir('logs')
@@ -272,22 +284,22 @@ def fetch_credit_cards():
         return resp.json()
     return []
 
-plaid_env = CONFIG['PLAID_ENV'].lower()
+plaid_env = Config.PLAID_ENV.lower()
 if plaid_env == 'sandbox':
-    plaid_host = plaid.Environment.Sandbox
+    plaid_host = 'https://sandbox.plaid.com'
 elif plaid_env == 'development':
-    plaid_host = plaid.Environment.Development
+    plaid_host = 'https://development.plaid.com'
 elif plaid_env == 'production':
-    plaid_host = plaid.Environment.Production
+    plaid_host = 'https://production.plaid.com'
 else:
-    plaid_host = plaid.Environment.Sandbox
+    plaid_host = 'https://sandbox.plaid.com'
     app.logger.warning(f"Unknown Plaid environment: {plaid_env}, defaulting to Sandbox")
 
 configuration = plaid.Configuration(
-    host=plaid_host,
+    host=plaid_host,  # Use the URL directly
     api_key={
-        'clientId': CONFIG['PLAID_CLIENT_ID'],
-        'secret': CONFIG['PLAID_SECRET'],
+        'clientId': Config.PLAID_CLIENT_ID,
+        'secret': Config.PLAID_SECRET,
         'plaidVersion': '2020-09-14'
     }
 )
@@ -544,14 +556,14 @@ def get_sample_transactions():
 
 async def fetch_card_details(card_key: str, client: httpx.AsyncClient) -> Dict[Any, Any]:
     """Fetch card details for a specific card key"""
-    if not all([REWARDS_CC_BASE_URL, REWARDS_CC_API_KEY, REWARDS_CC_API_HOST]):
+    if not all([Config.REWARDS_CC_BASE_URL, Config.REWARDS_CC_API_KEY, Config.REWARDS_CC_API_HOST]):
         app.logger.error("Missing required RapidAPI configuration")
         return {card_key: None}
 
-    url = f"{REWARDS_CC_BASE_URL}/creditcard-plaid-bycard/{card_key}"
+    url = f"{Config.REWARDS_CC_BASE_URL}/creditcard-plaid-bycard/{card_key}"
     headers = {
-        'X-RapidAPI-Key': REWARDS_CC_API_KEY,
-        'X-RapidAPI-Host': REWARDS_CC_API_HOST
+        'X-RapidAPI-Key': Config.REWARDS_CC_API_KEY,
+        'X-RapidAPI-Host': Config.REWARDS_CC_API_HOST
     }
     
     try:
@@ -580,16 +592,16 @@ def fetch_card_details_sync(card_key: str) -> Dict[Any, Any]:
     """Fetch card details for a specific card key (synchronous version)"""
     try:
         # Check if API keys are available
-        if not all([REWARDS_CC_API_KEY, REWARDS_CC_API_HOST]):
+        if not all([Config.REWARDS_CC_API_KEY, Config.REWARDS_CC_API_HOST]):
             app.logger.warning(f"Missing API credentials, using fallback data for {card_key}")
             return {"cardName": f"Sample Card ({card_key})", "cardIssuer": "Sample Bank", "annualFee": "0"}
             
         # Fix the URL format to use the proper RapidAPI structure
-        url = f"https://{REWARDS_CC_API_HOST}/creditcard-plaid-bycard/{card_key}"
+        url = f"https://{Config.REWARDS_CC_API_HOST}/creditcard-plaid-bycard/{card_key}"
         
         headers = {
-            'x-rapidapi-key': REWARDS_CC_API_KEY,
-            'x-rapidapi-host': REWARDS_CC_API_HOST
+            'x-rapidapi-key': Config.REWARDS_CC_API_KEY,
+            'x-rapidapi-host': Config.REWARDS_CC_API_HOST
         }
         
         app.logger.info(f"Fetching card details for {card_key} from {url}")
@@ -717,7 +729,7 @@ def token_required(f):
             
             # First try our own JWT verification
             try:
-                decoded_token = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+                decoded_token = jwt.decode(token, Config.JWT_SECRET, algorithms=["HS256"])
                 app.logger.info(f"Decoded token: {decoded_token}")
                 
                 # Pass the user information to the decorated function
@@ -738,7 +750,7 @@ def token_required(f):
                         'id': user_id,
                         'email': email,
                         'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
-                    }, JWT_SECRET, algorithm="HS256")
+                    }, Config.JWT_SECRET, algorithm="HS256")
                     
                     # Return the function result with a header asking client to update token
                     response = f({'id': user_id, 'email': email}, *args, **kwargs)
@@ -762,7 +774,6 @@ def token_required(f):
     
     return decorated
 
-csrf = CSRFProtect(app)
 @app.after_request
 def set_csrf_cookie(response):
     response.set_cookie('csrf_token', generate_csrf(), 
@@ -771,7 +782,6 @@ def set_csrf_cookie(response):
                         samesite='Lax'   # Helps prevent CSRF
                        )
     return response
-
 
 @app.route("/api/csrf-token", methods=["GET"])
 @limiter.exempt
@@ -791,16 +801,6 @@ def get_csrf_token():
                        )
     return response
 
-
-# Initialize service role client that bypasses RLS
-SUPABASE_SERVICE_ROLE = os.environ.get('SUPABASE_SERVICE_ROLE')  
-admin_supabase = None
-if SUPABASE_SERVICE_ROLE:  # Changed variable name here too
-    admin_supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE)  # And here
-    app.logger.info("Admin Supabase client initialized successfully")
-else:
-    app.logger.error("SUPABASE_SERVICE_ROLE not found in environment variables")  # Updated error message
-
 # Define ALL routes together
 # Options handler for CORS
 @app.route('/', defaults={'path': ''}, methods=['OPTIONS'])
@@ -815,7 +815,7 @@ def handle_preflight():
         response = make_response()
         origin = request.headers.get('Origin')
         
-        if origin in ALLOWED_ORIGINS:  # Use the global variable
+        if origin in Config.ALLOWED_ORIGINS:  # Use Config class
             response.headers.add('Access-Control-Allow-Origin', origin)
             # Add proper spacing and include CSRF token headers (both case variants)
             response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token, x-csrf-token')
@@ -873,7 +873,7 @@ def register():
         try:
             # This requires service role key, not anon key
             admin_supabase = create_client(
-                SUPABASE_URL, 
+                Config.SUPABASE_URL, 
                 os.environ.get('SUPABASE_SERVICE_ROLE')  # Use your env variable name
             )
             
@@ -987,7 +987,6 @@ def refresh():
     access_token = create_access_token(identity=current_user)
     return jsonify(access_token=access_token)
 
-
 @app.route("/auth/google", methods=["POST", "OPTIONS"])
 @limiter.exempt
 @csrf.exempt
@@ -996,7 +995,7 @@ def google_auth():
         response = make_response("")
         origin = request.headers.get('Origin')
         
-        if origin in ALLOWED_ORIGINS:
+        if origin in Config.ALLOWED_ORIGINS:
             response.headers.add('Access-Control-Allow-Origin', origin)
             # Properly formatted headers with spaces after commas
             response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token, x-csrf-token')
@@ -1014,7 +1013,7 @@ def google_auth():
         idinfo = id_token.verify_oauth2_token(
             token, 
             google_requests.Request(), 
-            GOOGLE_CLIENT_ID,
+            Config.GOOGLE_CLIENT_ID,
             clock_skew_in_seconds=30
         )
         
@@ -1082,7 +1081,7 @@ def google_auth():
             'id': user_id,
             'email': email,
             'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
-        }, JWT_SECRET, algorithm="HS256")
+        }, Config.JWT_SECRET, algorithm="HS256")
         
         response = jsonify({
             "success": True,
@@ -1103,7 +1102,6 @@ def google_auth():
         app.logger.error(f"Google auth error: {str(e)}")
         return jsonify({"success": False, "error": "Authentication failed"}), 401
 
-
 @app.route("/create_link_token", methods=["POST"])
 @token_required
 @csrf.exempt
@@ -1120,14 +1118,14 @@ def create_link_token(current_user):
                 'client_user_id': client_user_id
             },
             'client_name': 'Card Matcher',
-            'products': CONFIG['PLAID_PRODUCTS'],
+            'products': Config.PLAID_PRODUCTS,
             'language': 'en',
-            'country_codes': CONFIG['PLAID_COUNTRY_CODES']
+            'country_codes': Config.PLAID_COUNTRY_CODES
         }
         
         # Only add webhook if it exists
-        if CONFIG['PLAID_WEBHOOK']:
-            request_data['webhook'] = CONFIG['PLAID_WEBHOOK']
+        if Config.PLAID_WEBHOOK:
+            request_data['webhook'] = Config.PLAID_WEBHOOK
         
         app.logger.info(f"Plaid link token request: {request_data}")
         
@@ -1614,9 +1612,8 @@ def get_plans():
     """Return all payment plans"""
     return jsonify({
         'success': True,
-        'plans': PAYMENT_PLANS
+        'plans': Config.PAYMENT_PLANS
     })
-
 
 @app.route('/create-checkout-session', methods=['POST'])
 @token_required
@@ -1630,9 +1627,9 @@ def create_checkout_session(current_user):
         if plan_id not in ['basic', 'pro']:
             return jsonify({'error': 'Invalid plan selected'}), 400
             
-        plan = PAYMENT_PLANS[plan_id]
+        plan = Config.PAYMENT_PLANS[plan_id]
         
-        if not STRIPE_SECRET_KEY:
+        if not Config.STRIPE_SECRET_KEY:
             return jsonify({'error': 'Stripe is not configured'}), 500
 
         # Get or create customer
@@ -1679,7 +1676,6 @@ def create_checkout_session(current_user):
         app.logger.error(f"Error creating checkout session: {str(e)}", exc_info=True)
         return jsonify({'error': "An error occurred processing your payment. Please try again."}), 500
 
-
 @app.route('/webhook', methods=['POST'])
 def stripe_webhook():
     """Handle Stripe webhooks for subscription updates"""
@@ -1687,12 +1683,12 @@ def stripe_webhook():
     sig_header = request.headers.get('Stripe-Signature')
     
     try:
-        if not STRIPE_WEBHOOK_SECRET:
+        if not Config.STRIPE_WEBHOOK_SECRET:
             structured_logger.error("Webhook secret not configured")
             return jsonify({'error': "Server configuration error"}), 500
             
         event = stripe.Webhook.construct_event(
-            payload, sig_header, STRIPE_WEBHOOK_SECRET
+            payload, sig_header, Config.STRIPE_WEBHOOK_SECRET
         )
         
         # Log the webhook type
@@ -1784,7 +1780,7 @@ def handle_subscription_updated(subscription):
     
     # Map price_id back to plan_id
     plan_id = 'free'
-    for p_id, plan in PAYMENT_PLANS.items():
+    for p_id, plan in Config.PAYMENT_PLANS.items():
         if plan.get('stripe_price_id') == price_id:
             plan_id = p_id
             break
@@ -1859,13 +1855,10 @@ def record_payment(session):
     except Exception as e:
         app.logger.error(f"Error recording payment: {str(e)}")
 
-
 def handle_payment_completed(session):
     """Handle one-time payment checkout session completion"""
     # This is your existing record_payment logic
     record_payment(session)
-
-
 
 @app.route('/verify-session', methods=['GET'])
 @token_required
@@ -1946,7 +1939,7 @@ def get_subscription(current_user):
         subscription_status = user.get('subscription_status', 'inactive')
         
         # Get plan details
-        plan = PAYMENT_PLANS.get(subscription_tier, PAYMENT_PLANS['free'])
+        plan = Config.PAYMENT_PLANS.get(subscription_tier, Config.PAYMENT_PLANS['free'])
         
         return jsonify({
             'success': True,
@@ -2009,7 +2002,7 @@ def detailed_health_check():
         })
     
     # Check Stripe connection if configured
-    if STRIPE_SECRET_KEY:
+    if Config.STRIPE_SECRET_KEY:
         try:
             start_time = datetime.datetime.now()
             stripe.Account.retrieve()
@@ -2201,6 +2194,105 @@ def catch_all(path):
     app.logger.info(f"Catch-all route accessed: {path}")
     return jsonify({"message": "API endpoint not found"}), 404
 
+@app.route('/api/card-image/<card_key>', methods=['GET'])
+@limiter.limit("20 per minute")  # Rate limit this endpoint
+def get_card_image(card_key):
+    """
+    Fetch credit card image from RapidAPI without requiring authentication
+    This endpoint is rate-limited but publicly accessible
+    """
+    try:
+        # Sanitize the input to prevent path traversal
+        card_key = sanitize_input(card_key)
+        if not card_key or '/' in card_key or '\\' in card_key:
+            return jsonify({"error": "Invalid card key"}), 400
+            
+        # Check configuration
+        if not all([Config.REWARDS_CC_API_KEY, Config.REWARDS_CC_API_HOST]):
+            app.logger.error("Missing RapidAPI credentials")
+            return jsonify({
+                "cardImageUrl": f"https://via.placeholder.com/300x190?text={card_key}", 
+                "error": "Card image service unavailable"
+            }), 200  # Still return 200 with fallback image
+            
+        # Try to get from hardcoded mapping first (faster than API call)
+        card_mapping = {
+            "chase-sapphire-preferred": "https://creditcards.chase.com/K-Marketplace/images/cards/sapphire_preferred_card.png",
+            "chase-freedom-unlimited": "https://creditcards.chase.com/K-Marketplace/images/cards/freedom_unlimited_card.png",
+            "amex-gold": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/gold-card.png",
+            "amex-platinum": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/platinum-card.png",
+            "capital-one-venture": "https://ecm.capitalone.com/WCM/card/products/venture-card-art/mobile.png",
+            "discover-it-cash-back": "https://www.discover.com/content/dam/discover/en_us/credit-cards/card-art/discover-it-cashback-match-card-2021-1.png",
+            "citi-double-cash": "https://www.citi.com/CRD/images/cards/double_cash.jpg",
+            "citi-premier": "https://www.citi.com/CRD/images/premier-card-batch1-hero-desktop.jpg",
+        }
+        
+        if card_key.lower() in card_mapping:
+            return jsonify({"cardImageUrl": card_mapping[card_key.lower()]}), 200
+        
+        # Try to get from Supabase cache 
+        try:
+            cache_key = f"card_image_{card_key}"
+            cache_response = supabase.table('api_cache').select('data, cached_at').eq('key', cache_key).execute()
+            if cache_response.data:
+                # Check if cache is still fresh (less than 30 days old)
+                cache_time = datetime.datetime.fromisoformat(cache_response.data[0]['cached_at'])
+                if (datetime.datetime.now() - cache_time).days < 30:
+                    app.logger.info(f"Serving cached image for {card_key}")
+                    return jsonify(cache_response.data[0]['data'])
+        except Exception as cache_error:
+            app.logger.warning(f"Cache retrieval error: {str(cache_error)}")
+        
+        # Fetch from RapidAPI
+        url = f"https://{Config.REWARDS_CC_API_HOST}/creditcard-card-image/{card_key}"
+        
+        headers = {
+            'x-rapidapi-key': Config.REWARDS_CC_API_KEY,
+            'x-rapidapi-host': Config.REWARDS_CC_API_HOST
+        }
+        
+        app.logger.info(f"Fetching card image for {card_key}")
+        response = requests.get(url, headers=headers, timeout=10)  # Increased timeout
+        
+        if response.status_code == 200:
+            # Parse response
+            image_data = response.json()
+            
+            # Try to cache the result
+            try:
+                # Store in cache
+                supabase.table('api_cache').upsert({
+                    'key': cache_key,
+                    'data': image_data,
+                    'cached_at': datetime.datetime.now().isoformat()
+                }).execute()
+            except Exception as cache_error:
+                app.logger.warning(f"Cache storage error: {str(cache_error)}")
+            
+            return jsonify(image_data)
+        else:
+            # Return a fallback image with 200 status
+            return jsonify({
+                "cardImageUrl": f"https://via.placeholder.com/300x190?text={card_key}", 
+                "error": f"API error {response.status_code}"
+            }), 200
+    
+    except requests.exceptions.Timeout:
+        app.logger.error(f"Timeout fetching card image for {card_key}")
+        # Return fallback image with 200 status
+        return jsonify({
+            "cardImageUrl": f"https://via.placeholder.com/300x190?text={card_key}",
+            "error": "Request timed out"
+        }), 200
+        
+    except Exception as e:
+        app.logger.error(f"Error fetching card image: {str(e)}")
+        # Return fallback image with 200 status
+        return jsonify({
+            "cardImageUrl": f"https://via.placeholder.com/300x190?text={card_key}",
+            "error": "Failed to retrieve card image"
+        }), 200
+
 def rotate_api_keys():
     """Rotate API keys every 90 days"""
     # Check if keys need rotation
@@ -2225,7 +2317,7 @@ def handle_500_error(e):
     # Add CORS headers directly
     origin = request.headers.get('Origin')
     
-    if origin in ALLOWED_ORIGINS:  # Use the global variable
+    if origin in Config.ALLOWED_ORIGINS:  # Use Config class
         response.headers.add('Access-Control-Allow-Origin', origin)
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
         response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,DELETE')
